@@ -1,0 +1,135 @@
+generated: '2026-08-25'
+method: searched
+source:
+- openapi/leanlaw-api-openapi.json
+- https://api.myleanlaw.co/.well-known/openid-configuration
+- https://api.leanlaw.io/.well-known/oauth-protected-resource
+- https://platform.leanlaw.io/patterns
+- https://platform.leanlaw.io/agents
+standards:
+- id: openapi
+  name: OpenAPI Specification
+  conforms: true
+  version: 3.0.4
+  evidence: >-
+    openapi/leanlaw-api-openapi.json declares openapi 3.0.4 with 18 paths, 35 operations, 74
+    component schemas, unique operationIds on every operation and a summary on every operation.
+    Published at https://api.leanlaw.io/swagger/v1/swagger.json and linked from
+    https://platform.leanlaw.io/openapi.
+- id: oauth2
+  name: OAuth 2.0 / 2.1 Authorization Framework
+  conforms: true
+  evidence: >-
+    Authorization server at https://auth.myleanlaw.co/ with authorization_code + refresh_token grants,
+    code response type, and a revocation endpoint. token_endpoint_auth_methods include
+    private_key_jwt and client_secret_basic/post.
+- id: oidc
+  name: OpenID Connect Discovery 1.0
+  conforms: true
+  evidence: >-
+    https://api.myleanlaw.co/.well-known/openid-configuration returns a full discovery document with
+    issuer, authorization_endpoint, token_endpoint, jwks_uri, RS256 id_token signing, subject_types
+    public, and the openid scope.
+- id: rfc7636
+  name: PKCE (RFC 7636)
+  conforms: true
+  evidence: 'code_challenge_methods_supported: ["plain","S256"] in the discovery document.'
+  caveat: '"plain" is still advertised alongside S256; OAuth 2.1 requires S256.'
+- id: rfc9728
+  name: OAuth 2.0 Protected Resource Metadata (RFC 9728)
+  conforms: true
+  evidence: >-
+    POST https://api.leanlaw.io/mcp returns 401 with
+    WWW-Authenticate: Bearer resource_metadata="http://api.leanlaw.io/.well-known/oauth-protected-resource/mcp",
+    and that document resolves 200 naming https://auth.myleanlaw.co/ as the authorization server.
+  caveat: The resource_metadata URL in the challenge is advertised as http://, not https://.
+- id: rfc8414
+  name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns 200 with the same metadata document.
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  evidence: >-
+    A remote MCP server is operated at https://api.leanlaw.io/mcp over streamable HTTP, documented at
+    https://platform.leanlaw.io/agents with connection instructions for Claude and Microsoft Copilot.
+    Live probe returns a spec-correct 401 OAuth challenge.
+  status: private beta
+- id: rfc9457
+  name: Problem Details for HTTP APIs (RFC 9457)
+  conforms: false
+  evidence: >-
+    No application/problem+json media type appears in the OpenAPI, and no error body shape is
+    published. The spec declares only 200 responses.
+- id: pagination
+  name: Pagination
+  conforms: true
+  style: limit/offset with total
+  evidence: >-
+    Documented at https://platform.leanlaw.io/patterns — limit and offset query parameters, a
+    pagination object carrying limit/offset/total, max page size 1000.
+- id: idempotency
+  name: Idempotency keys
+  conforms: false
+  evidence: >-
+    No Idempotency-Key header or request-deduplication mechanism is documented in the OpenAPI or on
+    the patterns page. Six POST create operations have no dedupe key.
+- id: rfc8594
+  name: Sunset HTTP Header (RFC 8594)
+  conforms: false
+  evidence: No Sunset or Deprecation header is documented, and no deprecation policy is published.
+- id: rfc9116
+  name: security.txt (RFC 9116)
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on www.leanlaw.co, api.leanlaw.io, api.myleanlaw.co,
+    next.myleanlaw.co and support.leanlaw.co.
+- id: json-api
+  name: 'JSON:API'
+  conforms: false
+  evidence: >-
+    Responses use a proprietary {"data": ...} + {"pagination": ...} envelope, not the JSON:API media
+    type or document structure.
+domain_standards:
+- id: ledes
+  name: LEDES (Legal Electronic Data Exchange Standard)
+  organization: LEDES Oversight Committee
+  conforms: true
+  evidence_type: contract
+  evidence: >-
+    The contract declares LEDES for itself, not just the marketing site. GET /v2/codes carries the
+    summary "Get all LEDES codesets and codes" (operationId GetCodes, tag Codes) and returns
+    CodeSet objects described as "Represents a set of LEDES codes within a category". The
+    MatterLedesConfiguration schema — reachable from MatterDetail via select=ledesConfiguration —
+    carries enabled, activityCodeRequired, taskCodeRequired, expenseCodeRequired and codeSetIds,
+    binding LEDES activity/task/expense codes to time entries, fixed fees and expenses on a matter.
+  spec_locations:
+  - paths./v2/codes.get.summary
+  - components.schemas.CodeSet.description
+  - components.schemas.MatterLedesConfiguration
+  - components.schemas.MatterDetail.properties.ledesConfiguration
+  market_relevance: >-
+    LEDES is the interchange format corporate legal departments and e-billing vendors require from
+    outside counsel. A firm whose billing system speaks LEDES natively can invoice a corporate client
+    without a bespoke connector; one that does not needs a bilateral mapping. LeanLaw also lists LEDES
+    file output as a Pro-tier feature on its pricing page.
+  scope: >-
+    The API exposes LEDES code sets and per-matter LEDES requirements. LEDES FILE generation
+    (1998B/2000/XML export) is a product feature per https://www.leanlaw.co/pricing/, not a published
+    API operation.
+compliance_certifications:
+  published: false
+  trust_center: none found
+  evidence: >-
+    probe-security-programs.py found no trust center and no named certification (SOC 2, ISO 27001,
+    PCI DSS, HIPAA, FedRAMP). trust.leanlaw.co does not resolve; www.leanlaw.co/security and
+    /.well-known/security.txt return 404. No compliance page was found on the marketing site.
+  note: >-
+    No Compliance pointer is emitted for LeanLaw because no certification is published. This is a
+    notable gap for a vendor holding law-firm trust-accounting and client-confidential data.
+gaps:
+- No RFC 9457 problem details and no error schema at all.
+- No idempotency mechanism.
+- No security.txt and no published vulnerability-disclosure policy.
+- No published SOC 2 / ISO 27001 / HIPAA attestation or trust center.
+- PKCE still advertises the "plain" challenge method.
+- The RFC 9728 challenge advertises its resource_metadata URL over http://.

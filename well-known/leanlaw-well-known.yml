@@ -1,0 +1,94 @@
+generated: '2026-08-25'
+method: probed
+source: live GET of /.well-known/* on every LeanLaw host
+note: >-
+  api.myleanlaw.co serves a full OpenID Connect / OAuth 2.0 authorization-server discovery document
+  (issuer https://auth.myleanlaw.co/), and api.leanlaw.io serves an RFC 9728 OAuth protected-resource
+  metadata document describing the MCP server. www.leanlaw.co, next.myleanlaw.co and
+  support.leanlaw.co return an HTML 404 page for every probed path. No security.txt and no
+  api-catalog is served anywhere on the estate.
+hosts:
+- host: api.myleanlaw.co
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: leanlaw-openid-configuration.json
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: leanlaw-oauth-authorization-server.json
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: api.leanlaw.io
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: leanlaw-oauth-protected-resource.json
+  - path: /.well-known/oauth-protected-resource/mcp
+    status: 200
+    note: identical body to /.well-known/oauth-protected-resource; referenced by the WWW-Authenticate
+      resource_metadata challenge returned by POST /mcp
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/jwks.json
+    status: 404
+- host: auth.myleanlaw.co
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    note: same authorization server as api.myleanlaw.co; issuer of record
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+- host: www.leanlaw.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: next.myleanlaw.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: support.leanlaw.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404

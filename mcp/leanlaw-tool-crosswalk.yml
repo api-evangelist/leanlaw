@@ -1,0 +1,150 @@
+generated: '2026-08-25'
+method: derived
+source:
+- openapi/leanlaw-api-openapi.json
+- https://platform.leanlaw.io/agents
+- https://api.leanlaw.io/.well-known/oauth-protected-resource
+note: >-
+  Binding is by SEMANTICS AND SCOPE, not by observed tool names. LeanLaw's MCP tools/list is
+  auth-gated (401) and LeanLaw publishes no llms.txt, so no authoritative tool-name list exists. What
+  IS authoritative: the provider states the MCP server "exposes the same operations as the REST API,
+  plus some higher-level ones that combine several API calls into a single action", and the
+  OAuth protected-resource metadata publishes a scope per data kind. Each row below is anchored to a
+  published OAuth scope and the REST operations that scope governs. Confidence is set accordingly and
+  no row claims a verified tool name.
+surfaces:
+  openapi:
+    url: https://api.leanlaw.io/swagger/v1/swagger.json
+    local: openapi/leanlaw-api-openapi.json
+    version: 3.0.4
+    operations: 35
+    gated: false
+  mcp:
+    url: https://api.leanlaw.io/mcp
+    transport: streamable-http
+    gated: true
+    gate: OAuth 2.1 bearer; tools/list returns 401 with RFC 9728 challenge
+    status: private beta, per-firm enablement
+  graphql:
+    present: false
+coverage:
+  rest_operations_total: 35
+  rest_operations_scope_covered: 35
+  crosswalk_rows: 11
+  mcp_only_rows: 1
+  rest_only_rows: 0
+  confidence_high: 0
+  confidence_medium: 10
+  confidence_low: 1
+crosswalk:
+- tool: clients.read
+  category: Clients
+  scope: 'read:clients'
+  rest: [ListClients, GetClient]
+  binding: scope-to-operations
+  confidence: medium
+  note: Tool name unverified; scope and backing operations are published.
+- tool: clients.write
+  category: Clients
+  scope: 'write:clients'
+  rest: [CreateClient, UpdateClient, DeleteClient]
+  binding: scope-to-operations
+  confidence: medium
+- tool: client_balances.read
+  category: Clients
+  scope: 'read:balances'
+  rest: [GetClientBalances]
+  binding: scope-to-operations
+  confidence: medium
+  note: Published as a separate scope from read:clients, and the agents page lists "Account balances"
+    as its own read-only row.
+- tool: matters.read
+  category: Matters
+  scope: 'read:matters'
+  rest: [ListMatters, GetMatter]
+  binding: scope-to-operations
+  confidence: medium
+- tool: matters.write
+  category: Matters
+  scope: 'write:matters'
+  rest: [CreateMatter, UpdateMatter, DeleteMatter]
+  binding: scope-to-operations
+  confidence: medium
+  caution: >-
+    CreateMatter has an external side effect — it can create a QuickBooks Online customer and
+    sub-customer (changelog 2026-08-17). An agent granted write:matters can therefore write into the
+    firm's accounting system, and that consequence is not surfaced in the scope name.
+- tool: time_entries.read
+  category: Time entries
+  scope: 'read:time-entries'
+  rest: [ListTimeEntries, GetTimeEntry]
+  binding: scope-to-operations
+  confidence: medium
+- tool: time_entries.write
+  category: Time entries
+  scope: 'write:time-entries'
+  rest: [CreateTimeEntry, UpdateTimeEntry, DeleteTimeEntry]
+  binding: scope-to-operations
+  confidence: medium
+- tool: expenses.readwrite
+  category: Expenses
+  scope: ['read:expenses', 'write:expenses']
+  rest: [ListExpenses, GetExpense, CreateExpense, UpdateExpense, DeleteExpense]
+  binding: scope-to-operations
+  confidence: medium
+- tool: fixed_fees.readwrite
+  category: Fixed fees
+  scope: ['read:fixed-fees', 'write:fixed-fees']
+  rest: [ListFixedFees, GetFixedFee, CreateFixedFee, UpdateFixedFee, DeleteFixedFee]
+  binding: scope-to-operations
+  confidence: medium
+- tool: invoices.read
+  category: Invoices
+  scope: 'read:invoices'
+  rest: [ListInvoices]
+  binding: scope-to-operations
+  confidence: medium
+  note: Read-only by design — no write:invoices scope is published.
+- tool: codes.read
+  category: Billing codes
+  scope: 'read:codes'
+  rest: [GetCodes]
+  binding: scope-to-operations
+  confidence: medium
+  standard: LEDES
+mcp_only:
+- tool: '<composite operations, names unknown>'
+  reason: >-
+    The provider states the MCP server exposes "some higher-level [operations] that combine several
+    API calls into a single action". These have no single backing operationId and cannot be
+    enumerated without authenticated introspection. Recorded as a known unknown rather than guessed.
+  confidence: low
+rest_only: []
+unmapped_rest_operations:
+- operations: [ListUsers, UpdateUser]
+  reason: >-
+    No user scope is published in the protected-resource metadata, and "Users" does not appear in the
+    agents page permission table. Whether the MCP server exposes users at all is unknown — an agent
+    likely still needs ListUsers to resolve a userId for time tracking.
+- operations: [ListPracticeAreas, CreatePracticeArea, UpdatePracticeArea, DeletePracticeArea]
+  reason: No practice-area scope is published and practice areas are absent from the agents
+    permission table.
+- operations: [ListCustomFields]
+  reason: No custom-field scope is published; custom fields are absent from the agents permission table.
+divergences:
+- kind: scope-without-rest-parity
+  detail: >-
+    'read:* and write:* wildcard scopes exist with no REST equivalent — the REST API has no wildcard
+    concept because a firm API key carries flat read or write permission.'
+- kind: rest-without-scope
+  detail: >-
+    Users, practice areas and custom fields are REST operations with no published OAuth scope, so
+    those 7 of 35 operations may be unreachable from the MCP surface.
+- kind: product-without-either
+  detail: >-
+    Trust accounts and settlements are explicitly excluded from the agent surface AND absent from the
+    REST API. They are a LeanLaw product capability with no programmatic surface at all.
+gaps:
+- tools/list is auth-gated, so no tool name, description or inputSchema could be verified.
+- No llms.txt is published, so there is no fallback tool listing.
+- Composite MCP operations are acknowledged by the provider but undocumented.

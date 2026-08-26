@@ -64,5 +64,12 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-LeanLaw is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.nasdaqprivatemarket.com/
+LeanLaw is legal billing and revenue-operations software for small and mid-sized law firms, built natively on QuickBooks Online — time and expense tracking, matter management, trust/IOLTA accounting, flat-fee and contingency billing, invoicing, e-payments and LEDES output.
+
+- Website: https://www.leanlaw.co/
+- Developer portal: https://platform.leanlaw.io/start
+- API base URL: https://api.leanlaw.io
+- OpenAPI 3.0.4: https://api.leanlaw.io/swagger/v1/swagger.json
+- MCP server: https://api.leanlaw.io/mcp (private beta)
+
+Note: `leanlaw.com` is a different company (Lean Law Ventures) and is not related to this profile.

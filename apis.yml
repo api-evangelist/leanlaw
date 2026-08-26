@@ -1,18 +1,97 @@
 aid: leanlaw
 name: LeanLaw
-description: 'LeanLaw is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  LeanLaw is legal billing and revenue-operations software for small and mid-sized law firms, built
+  natively on QuickBooks Online. It runs the full law-firm revenue lifecycle — time and expense
+  tracking, matter management, trust/IOLTA accounting, flat-fee and contingency billing, invoicing,
+  e-payments, LEDES output and compensation reporting — and keeps a real-time two-way sync with
+  QuickBooks Online so invoices, payments, trust deposits and expenses post automatically. LeanLaw
+  publishes a public REST API (v2) at api.leanlaw.io covering clients, matters, time entries,
+  expenses, fixed fees, invoices, practice areas, custom fields, users and LEDES billing codes, with
+  an OpenAPI 3.0.4 specification, a Zudoku-powered developer portal at platform.leanlaw.io, and a
+  remote MCP server for AI assistants that is currently in private beta.
+image: https://www.leanlaw.co/images/og-default.png
 url: https://raw.githubusercontent.com/api-evangelist/leanlaw/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-25'
 modified: '2026-08-25'
 tags:
-- Company
-apis: []
+- Legal
+- Legal Billing
+- Law Firms
+- Time Tracking
+- Billing
+- Invoicing
+- Accounting
+- Trust Accounting
+- Practice Management
+- QuickBooks
+- Payments
+- LegalTech
+- SaaS
+apis:
+- aid: leanlaw:leanlaw-api
+  name: LeanLaw API
+  description: >-
+    The LeanLaw REST API (v2) provides programmatic access to a LeanLaw law-firm account — clients,
+    matters, time entries, expenses, fixed fees, invoices, practice areas, custom field definitions,
+    users, client balances and LEDES activity/task/expense codes. Requests are authenticated with a
+    firm-scoped API key sent as an HTTP bearer token, responses are wrapped in a data envelope with
+    limit/offset pagination, and PUT requests use sparse update semantics.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Legal Billing
+  - Time Tracking
+  - Invoicing
+  - Matter Management
+  - Accounting
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-api-openapi.json
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: Overlay
+    url: overlays/leanlaw-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-mcp
+  name: LeanLaw MCP Server
+  description: >-
+    LeanLaw operates a remote Model Context Protocol server at https://api.leanlaw.io/mcp that lets an
+    AI assistant work with a firm's clients, matters, time entries, expenses, fixed fees and invoices.
+    It exposes the same operations as the REST API plus higher-level composite actions, is authorized
+    per user via OAuth 2.1 against https://auth.myleanlaw.co/ with granular read/write scopes, and is
+    in private beta enabled per firm on request.
+  humanURL: https://platform.leanlaw.io/agents
+  baseURL: https://api.leanlaw.io/mcp
+  tags:
+  - MCP
+  - AI Agents
+  - Legal Billing
+  properties:
+  - type: MCPServer
+    url: mcp/leanlaw-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/leanlaw-tool-crosswalk.yml
+  - type: OAuthScopes
+    url: scopes/leanlaw-scopes.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/agents
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +99,59 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://www.leanlaw.co/
+- type: DeveloperPortal
+  url: https://platform.leanlaw.io/start
+- type: Documentation
+  url: https://platform.leanlaw.io/start
+- type: APIReference
+  url: https://platform.leanlaw.io/api
+- type: GettingStarted
+  url: https://platform.leanlaw.io/start
+- type: Support
+  url: https://support.leanlaw.co/
+- type: Blog
+  url: https://www.leanlaw.co/blog/
+- type: GitHubOrganization
+  url: https://github.com/leanlaw
+- type: Pricing
+  url: https://www.leanlaw.co/pricing/
+- type: SignUp
+  url: https://www.leanlaw.co/leanlaw-trial/
+- type: Login
+  url: https://next.myleanlaw.co/
+- type: TermsOfService
+  url: https://www.leanlaw.co/terms/
+- type: PrivacyPolicy
+  url: https://www.leanlaw.co/privacy/
+- type: StatusPage
+  url: https://leanlaw.statuspage.io/
+- type: ChangeLog
+  url: https://platform.leanlaw.io/changelog
+- type: Lifecycle
+  url: lifecycle/leanlaw-lifecycle.yml
+- type: Plans
+  url: plans/leanlaw-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/leanlaw-rate-limits.yml
+- type: Authentication
+  url: authentication/leanlaw-authentication.yml
+- type: OAuthScopes
+  url: scopes/leanlaw-scopes.yml
+- type: WellKnown
+  url: well-known/leanlaw-well-known.yml
+- type: Conformance
+  url: conformance/leanlaw-conformance.yml
+- type: DomainSecurity
+  url: security/leanlaw-domain-security.yml
+- type: Packages
+  url: packages/leanlaw-packages.yml
+- type: LLMsTxt
+  url: llms/leanlaw-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+x-enrichment:
+  date: '2026-08-25'
+  status: enriched
+  artifacts_added: 24
+  pass: local-v1

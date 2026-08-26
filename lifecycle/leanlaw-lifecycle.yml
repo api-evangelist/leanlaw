@@ -1,0 +1,71 @@
+generated: '2026-08-25'
+method: searched
+source: https://platform.leanlaw.io/changelog
+also:
+- https://www.leanlaw.co/service-level-agreement/
+- https://leanlaw.statuspage.io/
+- openapi/leanlaw-api-openapi.json
+versioning:
+  style: uri-path
+  current: v2
+  supported_versions: [v2]
+  spec_info_version: v1
+  discrepancy: >-
+    The OpenAPI info.version says "v1" while every path is /v2/. The document version does not track
+    the API version.
+  policy_published: false
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: not implemented
+  deprecation_header: not implemented
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No deprecation or sunset policy is published anywhere on the developer portal, and neither the
+    Sunset nor the Deprecation response header is documented. No operation in the OpenAPI carries
+    `deprecated: true`. There is no published statement about what happened to v1 or how long it
+    remains callable.
+status_page:
+  present: true
+  url: https://leanlaw.statuspage.io/
+  provider: Atlassian Statuspage
+  machine_readable: true
+  api: https://leanlaw.statuspage.io/api/v2/summary.json
+  components:
+  - Web Application
+  - Desktop Application
+  - Mobile Application
+  - Live Chat Support
+  - Integrations
+  gap: >-
+    No component covers the REST API or the MCP server specifically — an API consumer cannot see API
+    health on the status page.
+  last_page_update: '2025-05-09'
+  verified: '2026-08-25'
+sla:
+  published: true
+  url: https://www.leanlaw.co/service-level-agreement/
+  http_status: 200
+  applies_to: the LeanLaw service
+  api_specific_terms: not verified
+changelog:
+  present: true
+  url: https://platform.leanlaw.io/changelog
+  dated: true
+  see: changelog/leanlaw-changelog.yml
+release_cadence:
+  observed: continuous, with non-trivial changes published on the changelog
+  entries_2026: 8
+  most_recent_entry: '2026-08-17'
+  docs_last_modified: '2026-08-23'
+  server_version_observed: 0.27.0
+maturity:
+  rest_api: generally available
+  mcp_server: private beta (per-firm enablement on request)
+  oauth: private beta
+gaps:
+- No deprecation or sunset policy.
+- No Sunset/Deprecation headers (RFC 8594).
+- Status page has no API or MCP component.
+- The spec's info.version disagrees with the live path version.

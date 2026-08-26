@@ -1,0 +1,95 @@
+generated: '2026-08-25'
+method: searched
+source: https://www.leanlaw.co/pricing/
+plan_count: 4
+currency: USD
+billing_model: per user, per month
+note: >-
+  Pricing is published for the two entry tiers and gated behind sales for the two upper tiers. API
+  and MCP access are NOT listed as features of any tier — the pricing page does not mention the API,
+  and the developer docs do not state which plans include it. Treat API entitlement as undocumented.
+free_trial:
+  available: true
+  length_days: 14
+  credit_card_required: false
+plans:
+- name: Core
+  price: 55
+  currency: USD
+  period: month
+  unit: per user
+  public_price: true
+  included:
+  - Time and expense tracking
+  - E-Payments
+  - Reporting dashboard
+  - Trust accounting (IOLTA)
+  - Professional invoices
+  - Two-way QuickBooks Online sync
+  quota: not published
+  overage: not published
+  api_access: not stated
+- name: Pro
+  price: 75
+  currency: USD
+  period: month
+  unit: per user
+  public_price: true
+  included:
+  - Everything in Core
+  - Three custom invoice templates
+  - LEDES files
+  - Precise user permissions
+  - Matter-based accounting
+  quota: not published
+  overage: not published
+  api_access: not stated
+- name: Contingency
+  price: null
+  currency: USD
+  period: null
+  unit: per user
+  public_price: false
+  pricing_model: custom / contact sales
+  included:
+  - Settlement Wizard
+  - Lien management and tracking
+  - Automated settlement statements
+  - Contingency Insights
+  - Native QuickBooks Online sync
+  quota: not published
+  overage: not published
+  api_access: not stated
+- name: Elite
+  price: null
+  currency: USD
+  period: null
+  unit: per user
+  public_price: false
+  pricing_model: custom / contact sales
+  included:
+  - Everything in Core, Pro and Contingency
+  - Unlimited invoice templates
+  - Priority support with dedicated manager
+  - Custom reporting
+  - Compensation tracking
+  quota: not published
+  overage: not published
+  api_access: not stated
+add_ons:
+- name: Priority Support and Dedicated Manager
+  price: not published
+- name: Custom Reporting
+  price: not published
+- name: Unlimited Invoices
+  price: not published
+- name: Compensation Tracking
+  price: not published
+annual_billing:
+  available: true
+  discount: not published
+  note: Annual billing is offered at a reduced effective monthly rate; the rate requires contacting sales.
+gaps:
+- No tier states whether the REST API or the MCP server is included.
+- No API call quota, overage rate, or usage-based pricing is published.
+- Two of four tiers have no public price.

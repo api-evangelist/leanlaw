@@ -1,0 +1,115 @@
+generated: '2026-08-25'
+method: probed
+source: https://platform.leanlaw.io/agents + live POST https://api.leanlaw.io/mcp
+name: LeanLaw MCP Server
+status: private-beta
+description: >-
+  LeanLaw operates a first-party remote MCP server that lets an AI assistant work with a law firm's
+  clients, matters, time entries, expenses, fixed fees and invoices. Per the provider's own
+  documentation it exposes the same operations as the REST API plus higher-level operations that
+  combine several API calls into a single action. Access is enabled per firm on request (private
+  beta), then each individual at the firm authorizes their own connection, and the connection carries
+  only that person's access.
+deployment:
+  mode: remote
+  endpoint: https://api.leanlaw.io/mcp
+  auth: oauth
+  verified: probed
+transport: streamable-http
+availability:
+  model: per-firm allowlist, then per-user OAuth consent
+  request_channel: mailto:support@myleanlaw.com
+  note: >-
+    Documented as private beta and "subject to change without notice". Self-service enablement is
+    documented as not yet available.
+x-evidence:
+  fetched: '2026-08-25'
+  url: https://api.leanlaw.io/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 401
+  www_authenticate: Bearer resource_metadata="http://api.leanlaw.io/.well-known/oauth-protected-resource/mcp"
+  server: Kestrel
+  x_leanlaw_version: 0.27.0
+  interpretation: >-
+    The endpoint is live and implements RFC 9728 protected-resource discovery. tools/list is
+    auth-gated, so the live tool schemas could not be introspected anonymously. LeanLaw publishes no
+    llms.txt, so no published tool-name list exists to fall back on either; the tool surface below is
+    DERIVED from the OpenAPI operations the provider says the server mirrors, and is marked as such.
+authorization:
+  authorization_servers:
+  - https://auth.myleanlaw.co/
+  protected_resource: https://api.leanlaw.io/mcp
+  flow: authorization_code + PKCE (S256)
+  scopes_source: well-known/leanlaw-oauth-protected-resource.json
+  consent: per-user, granular read/write per data kind
+clients_documented:
+- name: Claude Desktop / Claude Cowork / claude.ai
+  method: Settings > Connectors > Add custom connector
+  url: https://api.leanlaw.io/mcp
+- name: Claude Code
+  method: CLI
+  install: claude mcp add --transport http leanlaw https://api.leanlaw.io/mcp
+- name: Microsoft Copilot
+  method: add as connector
+  url: https://api.leanlaw.io/mcp
+permissions_documented:
+  note: from https://platform.leanlaw.io/agents — "What an assistant can do" table
+  read_and_write:
+  - clients
+  - matters
+  - time entries
+  - expenses
+  - fixed fees
+  read_only:
+  - invoices
+  - account balances
+  - billing codes
+  excluded:
+  - trust accounts
+  - settlements
+tools:
+  status: candidate
+  method: derived
+  source: openapi/leanlaw-api-openapi.json
+  note: >-
+    DERIVED from the 35 REST operations the provider states the MCP server mirrors. These are NOT the
+    server's advertised tool names — tools/list is auth-gated and returned 401. The provider also
+    documents "higher-level operations that combine several API calls into a single action", which
+    cannot be enumerated without authenticated introspection. See mcp/leanlaw-tool-crosswalk.yml.
+  candidates:
+  - {name: list_clients, rest: ListClients}
+  - {name: create_client, rest: CreateClient}
+  - {name: get_client, rest: GetClient}
+  - {name: update_client, rest: UpdateClient}
+  - {name: delete_client, rest: DeleteClient}
+  - {name: get_client_balances, rest: GetClientBalances}
+  - {name: list_matters, rest: ListMatters}
+  - {name: create_matter, rest: CreateMatter}
+  - {name: get_matter, rest: GetMatter}
+  - {name: update_matter, rest: UpdateMatter}
+  - {name: delete_matter, rest: DeleteMatter}
+  - {name: list_time_entries, rest: ListTimeEntries}
+  - {name: create_time_entry, rest: CreateTimeEntry}
+  - {name: get_time_entry, rest: GetTimeEntry}
+  - {name: update_time_entry, rest: UpdateTimeEntry}
+  - {name: delete_time_entry, rest: DeleteTimeEntry}
+  - {name: list_expenses, rest: ListExpenses}
+  - {name: create_expense, rest: CreateExpense}
+  - {name: get_expense, rest: GetExpense}
+  - {name: update_expense, rest: UpdateExpense}
+  - {name: delete_expense, rest: DeleteExpense}
+  - {name: list_fixed_fees, rest: ListFixedFees}
+  - {name: create_fixed_fee, rest: CreateFixedFee}
+  - {name: get_fixed_fee, rest: GetFixedFee}
+  - {name: update_fixed_fee, rest: UpdateFixedFee}
+  - {name: delete_fixed_fee, rest: DeleteFixedFee}
+  - {name: list_invoices, rest: ListInvoices}
+  - {name: list_practice_areas, rest: ListPracticeAreas}
+  - {name: create_practice_area, rest: CreatePracticeArea}
+  - {name: update_practice_area, rest: UpdatePracticeArea}
+  - {name: delete_practice_area, rest: DeletePracticeArea}
+  - {name: list_users, rest: ListUsers}
+  - {name: update_user, rest: UpdateUser}
+  - {name: get_codes, rest: GetCodes}
+  - {name: list_custom_fields, rest: ListCustomFields}

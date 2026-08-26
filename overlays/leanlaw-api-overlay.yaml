@@ -1,0 +1,132 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay for the LeanLaw API
+  version: 1.0.0
+x-generated: '2026-08-25'
+x-method: generated
+x-source: openapi/leanlaw-api-openapi.json
+x-extends: openapi/leanlaw-api-openapi.json
+x-upstream: https://api.leanlaw.io/swagger/v1/swagger.json
+x-note: >-
+  Captures API Evangelist enrichments to LeanLaw's published OpenAPI without mutating it. Everything
+  asserted here is sourced from LeanLaw's own developer portal (platform.leanlaw.io) or its live
+  OAuth discovery documents — this overlay adds nothing LeanLaw does not itself publish somewhere.
+  The largest gap it closes is error responses: the upstream spec declares only 200s, while the
+  provider documents 400/401/403/429/500 in prose.
+actions:
+- target: $.info
+  description: Record the real documentation home and correct the version discrepancy in an extension.
+  update:
+    contact:
+      name: LeanLaw Support
+      email: support@myleanlaw.com
+      url: https://platform.leanlaw.io/
+    x-documentation-url: https://platform.leanlaw.io/start
+    x-changelog-url: https://platform.leanlaw.io/changelog
+    x-status-page: https://leanlaw.statuspage.io/
+    x-path-version: v2
+    x-version-discrepancy: >-
+      info.version is "v1" but every path is /v2/. The path version is authoritative.
+- target: $.servers
+  description: Annotate the single production server.
+  update:
+  - url: https://api.leanlaw.io
+    description: Production. HTTPS required; HTTP requests are rejected.
+- target: $.components.securitySchemes.BearerAuth
+  description: Document how the bearer credential is actually obtained and what it represents.
+  update:
+    description: >-
+      A LeanLaw API key presented as a bearer token. Created in the LeanLaw UI under Settings > API
+      with read or write permissions selected at creation time, and shown only once. The key
+      represents the FIRM (the account), not an individual user.
+    x-provisioning-ui: Settings > API > Generate API Key
+    x-credential-scope: firm
+- target: $.components
+  description: >-
+    Add the two documented request headers that are missing from the upstream spec, plus an error
+    envelope placeholder. Generated clients currently cannot send x-leanlaw-userid or
+    x-leanlaw-partnerid because neither appears in the contract.
+  update:
+    parameters:
+      LeanLawUserId:
+        name: x-leanlaw-userid
+        in: header
+        required: false
+        description: >-
+          Identifies the acting user for calls that otherwise operate at firm scope. Recommended for
+          time-tracking use cases so matter and time-entry lists are scoped to one user. Obtain the
+          value from ListUsers.
+        schema:
+          type: string
+          format: uuid
+      LeanLawPartnerId:
+        name: x-leanlaw-partnerid
+        in: header
+        required: false
+        description: LeanLaw partners must send their partner id on all requests.
+        schema:
+          type: string
+    headers:
+      LeanLawTraceId:
+        description: Trace id present on every response; quote it to LeanLaw support when reporting a problem.
+        schema:
+          type: string
+- target: $.paths.*.*.responses
+  description: >-
+    Add the error responses LeanLaw documents on https://platform.leanlaw.io/patterns but does not
+    declare in the spec. Applies to every operation; all five are documented as API-wide.
+  update:
+    '400':
+      description: Invalid request — bad parameters or invalid request data.
+    '401':
+      description: Missing authentication — no API key provided.
+    '403':
+      description: The token is not authorized to perform the action, or is invalid.
+    '429':
+      description: >-
+        Throttled — too many requests. No Retry-After or RateLimit-* header is returned; use
+        exponential backoff. Note that no idempotency key exists, so retrying a POST may duplicate.
+    '500':
+      description: Server-side error. Capture x-leanlaw-traceid and notify LeanLaw.
+- target: $.paths['/v2/matters'].post
+  description: Flag the external QuickBooks Online side effect on matter creation.
+  update:
+    x-side-effects:
+    - system: QuickBooks Online
+      effect: >-
+        For firms on the QuickBooks integration, creating a matter also creates the client as a
+        QuickBooks customer if not already connected, and the matter as a sub-customer when the firm
+        bills per matter. Matter creation is unaffected if QuickBooks is unavailable.
+      since: '2026-08-17'
+      source: https://platform.leanlaw.io/changelog
+      reversible: false
+      reversibility_note: >-
+        DeleteMatter is not documented as removing the QuickBooks customer/sub-customer it created.
+- target: $.paths['/v2/codes'].get
+  description: Record the LEDES domain-standard binding explicitly.
+  update:
+    x-domain-standard:
+      id: ledes
+      name: LEDES (Legal Electronic Data Exchange Standard)
+      body: LEDES Oversight Committee
+      role: Returns the LEDES activity, task and expense code sets a matter can require.
+- target: $.paths.*.put
+  description: Record sparse-update semantics, which reverse the usual reading of PUT.
+  update:
+    x-update-semantics: sparse
+    x-update-note: >-
+      Only properties present in the request body are changed. Omitting a property does NOT clear it.
+- target: $.components.schemas.Pagination
+  description: Record the published page-size ceiling.
+  update:
+    x-max-page-size: 1000
+    x-params: [limit, offset]
+- target: $.paths.*.get
+  description: Document the select parameter used for field expansion across list and detail reads.
+  update:
+    x-select-parameter:
+      name: select
+      style: comma-separated include/exclude
+      exclude_prefix: '-'
+      known_values: [contact, meta, customFields, ledesConfiguration]
+      example: select=contact,-meta

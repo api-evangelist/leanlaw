@@ -1,0 +1,74 @@
+generated: '2026-08-25'
+method: searched
+source: https://platform.leanlaw.io/changelog
+scheme: dated entries, entity-tagged
+format: html table (date / entities / details)
+machine_readable: false
+current_version: v2
+docs_last_modified: '2026-08-23'
+server_version_observed: 0.27.0
+note: >-
+  LeanLaw publishes a dated API changelog on its developer portal covering "most recent and
+  non-trivial updates". It is human-readable only — there is no RSS/Atom feed, no JSON feed, and no
+  per-entry permalink. Entries below are the full published window as of the fetch date.
+entries:
+- date: '2026-08-17'
+  entities: [Matters, Clients]
+  type: change
+  breaking: false
+  highlights: >-
+    Creating a matter now also creates the matching customers in QuickBooks Online for firms using
+    the QuickBooks integration — the client is added as a customer if not already connected, and the
+    matter is added as a sub-customer when the firm bills per matter. Creating a client on its own
+    still does not reach QuickBooks. Matter creation is unaffected if QuickBooks is unavailable.
+  operations: [CreateMatter]
+  side_effect: true
+- date: '2026-07-29'
+  entities: [Custom Fields]
+  type: addition
+  breaking: false
+  highlights: >-
+    Added the /v2/custom-fields endpoint for retrieving custom field definitions. Custom field values
+    can be retrieved on matters, clients and users via select=customFields.
+  operations: [ListCustomFields]
+- date: '2026-07-28'
+  entities: [All]
+  type: fix
+  breaking: true
+  highlights: >-
+    Fixed enum values being returned as PascalCase instead of camelCase, which broke deserialization
+    for some clients. All enum values are now returned in camelCase.
+  note: >-
+    Recorded as breaking: any client that pinned the PascalCase values had to change. LeanLaw
+    classifies it as a fix rather than a breaking change and gave no deprecation window.
+- date: '2026-06-26'
+  entities: [Expenses]
+  type: addition
+  breaking: false
+  highlights: Added a checkNumber property to expenses (ExpenseDetail / ExpenseList).
+- date: '2026-06-17'
+  entities: [Practice Areas]
+  type: addition
+  breaking: false
+  highlights: Added more practice-area support — creating practice areas and assigning them to matters.
+  operations: [CreatePracticeArea, UpdatePracticeArea, DeletePracticeArea]
+- date: '2026-06-15'
+  entities: [Time Entries, Expenses, Fixed Fees]
+  type: addition
+  breaking: false
+  highlights: Added invoice information to billable and billed items.
+- date: '2026-04-22'
+  entities: [Time Entries]
+  type: fix
+  breaking: false
+  highlights: Fixed time entries created via the API having a null time value.
+- date: '2026-04-06'
+  entities: [Matters]
+  type: fix
+  breaking: false
+  highlights: Fixed an issue where using select=ledesConfiguration on requests would cause a timeout.
+gaps:
+- No feed (RSS/Atom/JSON) — the changelog cannot be watched programmatically.
+- No per-entry anchor or permalink.
+- No version numbers attached to entries; the API is versioned only as v2.
+- A camelCase enum change that broke clients is filed as a fix with no deprecation window.

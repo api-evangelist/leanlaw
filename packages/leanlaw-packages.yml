@@ -1,0 +1,77 @@
+generated: '2026-08-25'
+method: searched
+source:
+- https://registry.npmjs.org/-/v1/search?text=leanlaw
+- https://pypi.org/pypi/leanlaw/json
+- https://rubygems.org/api/v1/gems/leanlaw.json
+- https://azuresearch-usnc.nuget.org/query?q=leanlaw
+- https://api.github.com/orgs/leanlaw/repos
+- https://platform.leanlaw.io/start
+sdk_count: 0
+official_sdk_count: 0
+note: >-
+  LeanLaw publishes NO first-party client library on any package registry. npm search for "leanlaw"
+  returns 0 results; PyPI, RubyGems and NuGet return 404/0 hits. The developer portal's Getting
+  Started page teaches the API with a raw curl command and never mentions an SDK. The GitHub
+  organization github.com/leanlaw is real (Organization, 2 public repos) but neither repo is a
+  LeanLaw client library — one is a NodeJS SAMPLE, the other a fork of Intuit's QuickBooks .NET SDK.
+  No SDKs pointer is emitted for this provider because there is no SDK to point at.
+registries_checked:
+- registry: npm
+  query: leanlaw
+  results: 0
+  status: 200
+- registry: pypi
+  package: leanlaw
+  status: 404
+- registry: rubygems
+  package: leanlaw
+  status: 404
+- registry: nuget
+  query: leanlaw
+  results: 0
+  status: 200
+- registry: packagist
+  checked: false
+  reason: no PHP surface referenced anywhere in the docs
+packages: []
+first_party_repositories:
+- name: api-sample
+  url: https://github.com/leanlaw/api-sample
+  owner: leanlaw
+  official: true
+  kind: sample
+  is_sdk: false
+  language: JavaScript
+  description: Simple NodeJS sample for using the LeanLaw API
+  registry: null
+  version: null
+  published: null
+  last_updated: '2025-04-22'
+  note: >-
+    Sample code, not a distributable client. Not published to npm. Last updated 2025-04-22 — more
+    than a year before the API changes recorded in the 2026 changelog (custom fields, practice areas,
+    invoice linkage on billable items, camelCase enum change), so the sample predates the current
+    contract.
+- name: QuickBooks-V3-DotNET-SDK
+  url: https://github.com/leanlaw/QuickBooks-V3-DotNET-SDK
+  owner: leanlaw
+  official: false
+  first_party: false
+  kind: fork
+  is_sdk: true
+  sdk_for: Intuit QuickBooks REST API v3
+  description: .Net SDK for QuickBooks REST API v3 services
+  registry: null
+  version: null
+  published: null
+  last_updated: '2025-04-22'
+  note: >-
+    This is a fork of INTUIT's QuickBooks .NET SDK, not a LeanLaw client. It wraps a third party's
+    API and must not be counted as a LeanLaw SDK.
+cdn_distributions: []
+gaps:
+- No official SDK in any language on any registry.
+- The only first-party code sample is over a year stale relative to the API's own changelog.
+- Getting Started documents curl only; no generated client is offered despite a published OpenAPI
+  that would support code generation.

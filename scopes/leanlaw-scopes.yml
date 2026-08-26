@@ -1,0 +1,88 @@
+generated: '2026-08-25'
+method: probed
+source: https://api.leanlaw.io/.well-known/oauth-protected-resource
+docs: https://platform.leanlaw.io/agents
+note: >-
+  Derived from the LIVE OAuth metadata, not from the OpenAPI. The published OpenAPI declares only a
+  `BearerAuth` (http/bearer) scheme with no oauth2 flows, so derive-oauth-scopes.py found zero scopes
+  in the spec; the real scope surface is published in the authorization-server and protected-resource
+  discovery documents. This is a genuine gap between LeanLaw's contract and its deployed auth.
+authorization_server: https://auth.myleanlaw.co/
+issuer: https://auth.myleanlaw.co/
+protected_resource: https://api.leanlaw.io/mcp
+authorization_endpoint: https://api.myleanlaw.co/oauth/authorize
+token_endpoint: https://api.myleanlaw.co/oauth/token
+revocation_endpoint: https://api.myleanlaw.co/oauth/revoke
+jwks_uri: https://api.myleanlaw.co/.well-known/jwks.json
+flows:
+- authorization_code
+- refresh_token
+pkce:
+  supported: true
+  code_challenge_methods: [S256, plain]
+token_endpoint_auth_methods:
+- none
+- client_secret_basic
+- client_secret_post
+- private_key_jwt
+scope_count: 16
+scopes:
+- name: openid
+  description: OpenID Connect authentication; issues an ID token (RS256).
+  source: openid-configuration
+- name: offline_access
+  description: Issue a refresh token so the agent can act after the initial session expires.
+  source: both
+- name: 'read:*'
+  description: Read access to every supported resource. Wildcard grant.
+  source: both
+- name: 'write:*'
+  description: Write access to every supported resource. Wildcard grant.
+  source: both
+- name: 'read:clients'
+  description: Read law-firm clients, including contact details when requested via select=contact.
+  source: both
+- name: 'write:clients'
+  description: Create, update and delete clients.
+  source: both
+- name: 'read:matters'
+  description: Read matters, their responsible/originator users, practice area and LEDES configuration.
+  source: both
+- name: 'write:matters'
+  description: Create, update and delete matters. Creating a matter can also create the matching
+    QuickBooks Online customer/sub-customer for firms on the QBO integration.
+  source: both
+- name: 'read:time-entries'
+  description: Read billable time entries.
+  source: both
+- name: 'write:time-entries'
+  description: Create, update and delete time entries.
+  source: both
+- name: 'read:expenses'
+  description: Read matter expenses.
+  source: both
+- name: 'write:expenses'
+  description: Create, update and delete expenses.
+  source: both
+- name: 'read:fixed-fees'
+  description: Read fixed-fee (flat-fee) billable items.
+  source: both
+- name: 'write:fixed-fees'
+  description: Create, update and delete fixed fees.
+  source: both
+- name: 'read:invoices'
+  description: Read invoices. There is no write scope for invoices — the invoice surface is read-only.
+  source: both
+- name: 'read:balances'
+  description: Read client account balances.
+  source: both
+- name: 'read:codes'
+  description: Read LEDES activity, task and expense code sets.
+  source: both
+observations:
+- No write scope exists for invoices, balances or codes — those surfaces are read-only by design and
+  the scope list reflects it.
+- Trust accounts and settlements are explicitly excluded from the agent surface per
+  https://platform.leanlaw.io/agents, and no scope is published for them.
+- The `read:*` / `write:*` wildcards let a client request blanket access; a least-privilege
+  integration should request the specific resource scopes instead.

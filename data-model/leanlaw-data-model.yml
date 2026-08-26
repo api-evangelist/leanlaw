@@ -1,0 +1,263 @@
+generated: '2026-08-25'
+method: derived
+source: openapi/leanlaw-api-openapi.json
+also: https://platform.leanlaw.io/concepts
+summary: >-
+  LeanLaw's data core is a law-firm billing graph. Clients own matters; matters own the three kinds of
+  billable item (time entries, expenses, fixed fees); billable items roll up into invoices. Users are
+  assigned to matters as responsible attorney and originators, and time entries always carry a user.
+  Practice areas classify matters, LEDES code sets classify billable work, and firm-defined custom
+  fields decorate clients, matters and users.
+identifier_scheme:
+  internal: GUID (UUID)
+  example: f3888fb4-1ca8-ef11-8474-6045bd06f3a2
+  firm_facing_alias: reference
+  reference_note: >-
+    A separate `reference` property carries the firm's own "Client ID" / "Matter ID". It is optional,
+    may exist on the client, the matter, both or neither, and must not be confused with the GUID.
+  id_prefixes: none — ids are bare GUIDs with no type prefix
+entities:
+- name: Client
+  schemas: [ClientDetail, ClientList, CreateClient, UpdateClient, ClientReference]
+  id_field: clientId
+  operations: [ListClients, CreateClient, GetClient, UpdateClient, DeleteClient, GetClientBalances]
+  notable_fields: [reference, contact, customFields, meta]
+- name: Matter
+  schemas: [MatterDetail, MatterList, CreateMatter, UpdateMatter, MatterReference, MatterDetailClient, MatterListClient]
+  id_field: matterId
+  operations: [ListMatters, CreateMatter, GetMatter, UpdateMatter, DeleteMatter]
+  notable_fields: [reference, matterType, responsibleId, originatorIds, practiceAreaId, conflictInformation, ledesConfiguration, customFields, meta]
+- name: TimeEntry
+  schemas: [TimeEntryDetail, TimeEntryList, CreateTimeEntry, UpdateTimeEntry]
+  id_field: timeEntryId
+  operations: [ListTimeEntries, CreateTimeEntry, GetTimeEntry, UpdateTimeEntry, DeleteTimeEntry]
+  notable_fields: [userId, matterId, clientId, invoiceId, fixedFeeId, billingType, meta]
+  kind: billable item
+- name: Expense
+  schemas: [ExpenseDetail, ExpenseList, CreateExpense, UpdateExpense]
+  id_field: expenseId
+  operations: [ListExpenses, CreateExpense, GetExpense, UpdateExpense, DeleteExpense]
+  notable_fields: [userId, matterId, clientId, invoiceId, checkNumber, meta]
+  kind: billable item
+- name: FixedFee
+  schemas: [FixedFeeDetail, FixedFeeList, CreateFixedFee, UpdateFixedFee, FixedFeeReference]
+  id_field: fixedFeeId
+  operations: [ListFixedFees, CreateFixedFee, GetFixedFee, UpdateFixedFee, DeleteFixedFee]
+  notable_fields: [userId, matterId, clientId, invoiceId, meta]
+  kind: billable item
+- name: Invoice
+  schemas: [InvoiceList, InvoiceReference, InvoiceState]
+  id_field: invoiceId
+  operations: [ListInvoices]
+  access: read-only
+  notable_fields: [clientId, matterId, invoiceState, meta]
+- name: User
+  schemas: [UserList, UserReference, UpdateUser, Role]
+  id_field: userId
+  operations: [ListUsers, UpdateUser]
+  access: read + update only (no create, no delete)
+  notable_fields: [role, customFields]
+- name: PracticeArea
+  schemas: [PracticeAreaList, PracticeAreaReference]
+  id_field: practiceAreaId
+  operations: [ListPracticeAreas, CreatePracticeArea, UpdatePracticeArea, DeletePracticeArea]
+- name: ClientBalances
+  schemas: [ClientBalances]
+  operations: [GetClientBalances]
+  access: read-only
+  kind: computed projection of a client, not an independently addressable entity
+- name: Code
+  schemas: [CodeDetail, CodeList, CodeSet]
+  id_field: codeSetId
+  operations: [GetCodes]
+  access: read-only
+  standard: LEDES
+- name: CustomField
+  schemas: [CustomFieldList, CustomFieldOption, CustomFieldValue, CustomFieldEntityType, CustomFieldValueType]
+  id_field: id
+  operations: [ListCustomFields]
+  access: read-only (definitions and values)
+relationships:
+- from: Matter
+  to: Client
+  type: belongs_to
+  via: clientId
+  cardinality: exactly one
+  evidence: MatterDetail.clientId + MatterDetail.client ($ref MatterDetailClient)
+- from: Client
+  to: Matter
+  type: has_many
+  via: clientId
+  cardinality: zero or more
+  evidence: https://platform.leanlaw.io/concepts
+- from: Matter
+  to: User
+  type: belongs_to
+  via: responsibleId
+  role: responsible user
+  cardinality: exactly one
+  evidence: MatterDetail.responsibleId + MatterDetail.responsible ($ref UserReference)
+- from: Matter
+  to: User
+  type: has_many
+  via: originatorIds
+  role: originators
+  evidence: MatterDetail.originatorIds + MatterDetail.originators ($ref UserReference[])
+- from: Matter
+  to: PracticeArea
+  type: belongs_to
+  via: practiceAreaId
+  cardinality: zero or one
+  evidence: MatterDetail.practiceAreaId + MatterDetail.practiceArea ($ref PracticeAreaReference)
+- from: Matter
+  to: MatterLedesConfiguration
+  type: has_one
+  via: ledesConfiguration
+  opt_in: select=ledesConfiguration
+  evidence: MatterDetail.ledesConfiguration
+- from: Matter
+  to: ConflictInformation
+  type: has_one
+  via: conflictInformation
+- from: TimeEntry
+  to: Matter
+  type: belongs_to
+  via: matterId
+  cardinality: exactly one
+  evidence: TimeEntryDetail.matterId + TimeEntryDetail.matter ($ref MatterReference)
+- from: TimeEntry
+  to: Client
+  type: belongs_to
+  via: clientId
+  derived_through: matter
+  evidence: TimeEntryDetail.clientId + TimeEntryDetail.client ($ref ClientReference)
+- from: TimeEntry
+  to: User
+  type: belongs_to
+  via: userId
+  cardinality: exactly one (always assigned)
+  evidence: TimeEntryDetail.userId + TimeEntryDetail.user ($ref UserReference)
+- from: TimeEntry
+  to: Invoice
+  type: belongs_to
+  via: invoiceId
+  cardinality: zero or one
+  note: populated once the item is billed
+- from: TimeEntry
+  to: FixedFee
+  type: belongs_to
+  via: fixedFeeId
+  cardinality: zero or one
+  note: a time entry can be rolled under a fixed fee
+  evidence: TimeEntryDetail.fixedFeeId + TimeEntryDetail.fixedFee ($ref FixedFeeReference)
+- from: Expense
+  to: Matter
+  type: belongs_to
+  via: matterId
+  cardinality: exactly one
+- from: Expense
+  to: Client
+  type: belongs_to
+  via: clientId
+  derived_through: matter
+- from: Expense
+  to: User
+  type: belongs_to
+  via: userId
+  cardinality: zero or one (optional)
+- from: Expense
+  to: Invoice
+  type: belongs_to
+  via: invoiceId
+  cardinality: zero or one
+- from: FixedFee
+  to: Matter
+  type: belongs_to
+  via: matterId
+  cardinality: exactly one
+- from: FixedFee
+  to: Client
+  type: belongs_to
+  via: clientId
+  derived_through: matter
+- from: FixedFee
+  to: User
+  type: belongs_to
+  via: userId
+  cardinality: zero or one (optional)
+- from: FixedFee
+  to: Invoice
+  type: belongs_to
+  via: invoiceId
+  cardinality: zero or one
+- from: Invoice
+  to: Client
+  type: belongs_to
+  via: clientId
+- from: Invoice
+  to: Matter
+  type: belongs_to
+  via: matterId
+- from: User
+  to: Role
+  type: has_one
+  via: role
+- from: Client
+  to: Contact
+  type: has_one
+  via: contact
+  opt_in: select=contact
+- from: Client
+  to: CustomFieldValue
+  type: has_many
+  via: customFields
+  opt_in: select=customFields
+- from: Matter
+  to: CustomFieldValue
+  type: has_many
+  via: customFields
+  opt_in: select=customFields
+- from: User
+  to: CustomFieldValue
+  type: has_many
+  via: customFields
+  opt_in: select=customFields
+- from: CustomFieldValue
+  to: CustomFieldList
+  type: belongs_to
+  via: id
+  note: the id on a value ties it to the field DEFINITION returned by ListCustomFields
+- from: MatterLedesConfiguration
+  to: CodeSet
+  type: has_many
+  via: codeSetIds
+external_systems:
+- name: QuickBooks Online
+  relationship: two-way sync
+  api_visible_effect: >-
+    Per the 2026-08-17 changelog, CreateMatter can create a QuickBooks customer (for the client) and
+    a sub-customer (for the matter) when the firm bills per matter. CreateClient alone does not reach
+    QuickBooks.
+  note: >-
+    QuickBooks identifiers are not exposed as fields in the published LeanLaw schemas, so an API
+    consumer cannot resolve a LeanLaw record to its QuickBooks counterpart through this contract.
+shared_components:
+  envelope_wrappers: [ClientDetailResponse, ClientListListResponse, ClientBalancesResponse, CodeListResponse,
+    CustomFieldListIEnumerableResponse, ExpenseDetailResponse, ExpenseListListResponse, FixedFeeDetailResponse,
+    FixedFeeListListResponse, InvoiceListListResponse, MatterDetailResponse, MatterListListResponse,
+    PracticeAreaListIEnumerableResponse, PracticeAreaListResponse, TimeEntryDetailResponse,
+    TimeEntryListListResponse, UserListIEnumerableResponse, UserListResponse]
+  cross_cutting: [Pagination, Metadata, Contact, ConflictInformation]
+  enums: [BillingType, CustomFieldEntityType, CustomFieldValueType, InvoiceState, MatterType, Role, HealthStatus]
+  reference_types: [ClientReference, MatterReference, UserReference, InvoiceReference, FixedFeeReference, PracticeAreaReference]
+  note: >-
+    Every entity is modelled as a Detail/List pair plus a Reference type and a response wrapper — 74
+    schemas for 11 entities. Reference types give consistent embedded-object shapes across the graph.
+observations:
+- The billable-item triad (TimeEntry / Expense / FixedFee) shares an almost identical shape
+  (userId, matterId, clientId, invoiceId, meta) but is modelled as three parallel schema families
+  rather than one polymorphic type.
+- clientId is denormalized onto every billable item and invoice even though it is derivable through
+  matterId, which makes client-scoped queries cheap but creates two paths to the same truth.
+- Trust/IOLTA accounting and settlements are core LeanLaw product features but have NO representation
+  in the published API — no schema, no path, no scope.

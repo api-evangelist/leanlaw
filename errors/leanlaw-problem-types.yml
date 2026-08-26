@@ -1,0 +1,69 @@
+generated: '2026-08-25'
+method: searched
+source: https://platform.leanlaw.io/patterns
+format: proprietary
+rfc9457: false
+problem_json: false
+note: >-
+  DERIVED-FROM-DOCS, NOT FROM THE SPEC. The published OpenAPI declares only 200 responses across all
+  35 operations — there is not a single 4xx or 5xx response object, and no error schema exists in
+  components. Everything below was read from the provider's "Request and Response Patterns" page.
+  LeanLaw does not publish an error body shape, an error code registry, or a machine-readable error
+  contract of any kind.
+envelope:
+  success_field: data
+  error_body_shape: not published
+  error_code_registry: none published
+  trace_header: x-leanlaw-traceid
+  trace_note: Every response carries a trace id; the docs direct callers to quote it to support.
+success_codes:
+- code: '200'
+  applies_to: [GET, PUT, DELETE]
+- code: '201'
+  applies_to: [POST]
+problem_types:
+- status: 400
+  title: Invalid request
+  detail: Bad parameters or invalid request data.
+  remediation: Validate the request body and query parameters against the OpenAPI schema before retrying.
+    Note that PUT is sparse — omitted fields are not cleared.
+  retryable: false
+  source: https://platform.leanlaw.io/patterns
+- status: 401
+  title: Missing authentication
+  detail: No API key was provided.
+  remediation: >-
+    Send `Authorization: Bearer {apikey}`. Requests must use HTTPS; HTTP is rejected.
+  retryable: false
+  source: https://platform.leanlaw.io/patterns
+- status: 403
+  title: Not authorized or invalid token
+  detail: The token is not authorized to perform the action, or is invalid.
+  remediation: >-
+    Confirm the API key is valid and was created with the required read/write scope. A key created
+    read-only cannot perform writes. On the MCP surface, confirm the granted OAuth scopes cover the
+    resource.
+  retryable: false
+  source: https://platform.leanlaw.io/patterns
+- status: 429
+  title: Throttled
+  detail: The caller has issued too many requests.
+  remediation: >-
+    The docs say to "initiate a backup retry strategy". No Retry-After header, no RateLimit-* headers
+    and no published limit values exist, so a client must implement blind exponential backoff.
+  retryable: true
+  caution: >-
+    No idempotency mechanism is published, so retrying a POST after a 429 or a timeout risks creating
+    a duplicate client, matter, time entry, expense or fixed fee.
+  source: https://platform.leanlaw.io/patterns
+- status: 500
+  title: Server error
+  detail: Server-side error.
+  remediation: Capture x-leanlaw-traceid and notify LeanLaw support. The docs explicitly ask to be told.
+  retryable: true
+  source: https://platform.leanlaw.io/patterns
+gaps:
+- No 4xx/5xx responses are declared in the OpenAPI, so generated clients and mocks have no error model.
+- No error body schema, error code, or machine-readable error identifier is published.
+- No 404 is documented despite six GET-by-id and six DELETE-by-id operations existing.
+- No Retry-After or RateLimit-* header accompanies the documented 429.

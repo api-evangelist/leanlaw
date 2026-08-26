@@ -1,0 +1,4389 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "LeanLaw API",
+    "description": "This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://api.leanlaw.io"
+    }
+  ],
+  "paths": {
+    "/v2/clients": {
+      "get": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Get a list of clients",
+        "operationId": "ListClients",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search for clients matching the query string. Returns clients that match partially on either name or reference.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reference",
+            "in": "query",
+            "description": "Return client matching the reference (exact match only)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: contact, meta, customFields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for clients.\nSupported sort fields: name, reference\nExample: \"name,-reference\" sorts by name ascending, then reference descending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientListListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Create a new client",
+        "operationId": "CreateClient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/clients/{id}": {
+      "get": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Get a client by id",
+        "operationId": "GetClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the client",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Update a client",
+        "operationId": "UpdateClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the client to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Delete a client",
+        "description": "Deleting a client will remove it from the system permanently. Clients that have\nassociated matters in the system cannot be deleted.",
+        "operationId": "DeleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the client to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/clients/{id}/balances": {
+      "get": {
+        "tags": [
+          "Client"
+        ],
+        "summary": "Get the invoice balances for a client",
+        "operationId": "GetClientBalances",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the client",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientBalancesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/codes": {
+      "get": {
+        "tags": [
+          "Codes"
+        ],
+        "summary": "Get all LEDES codesets and codes",
+        "operationId": "GetCodes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/custom-fields": {
+      "get": {
+        "tags": [
+          "CustomField"
+        ],
+        "summary": "Get custom field definitions",
+        "description": "Lists the firm's custom field definitions across all entity types. \nField definitions are managed in the LeanLaw application; this endpoint is read-only.",
+        "operationId": "ListCustomFields",
+        "parameters": [
+          {
+            "name": "entity",
+            "in": "query",
+            "description": "Only return custom fields for this entity type",
+            "schema": {
+              "$ref": "#/components/schemas/CustomFieldEntityType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldListIEnumerableResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/expenses": {
+      "get": {
+        "tags": [
+          "Expense"
+        ],
+        "summary": "Get a list of expenses",
+        "operationId": "ListExpenses",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Only return expenses that are dated after or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Only return expenses that are dated before or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Only return expenses that are associated with this user",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matterId",
+            "in": "query",
+            "description": "Only return expenses that are associated with this matter",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "description": "Only return expenses that are associated with this client",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "billed",
+            "in": "query",
+            "description": "If true, only returns expenses that are on an invoice, regardless of the invoice state.\nIf false, only returns expenses that are not on an invoice.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "invoiceId",
+            "in": "query",
+            "description": "Only return expenses billed on this invoice.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: client, matter, user, meta, invoice",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for expenses.\nSupported sort fields: date, amount, description\nExample: \"-date,amount\" sorts by date descending, then amount ascending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseListListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Expense"
+        ],
+        "summary": "Create a new expense",
+        "operationId": "CreateExpense",
+        "requestBody": {
+          "description": "The expense to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExpense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/expenses/{id}": {
+      "get": {
+        "tags": [
+          "Expense"
+        ],
+        "summary": "Get an expense by id",
+        "operationId": "GetExpense",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the expense",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Expense"
+        ],
+        "summary": "Update an expense",
+        "description": "Updating an expense is only possible if it has not been billed (added to an invoice). \nThe update is \"sparse\", where only the fields that are provided in the request will be updated.",
+        "operationId": "UpdateExpense",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the expense to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExpense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Expense"
+        ],
+        "summary": "Delete an expense",
+        "description": "Deleting an expense will remove it from the system permanently. Expenses that have been\nbilled (added to an invoice) cannot be deleted.",
+        "operationId": "DeleteExpense",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the expense to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/fixed-fees": {
+      "get": {
+        "tags": [
+          "FixedFee"
+        ],
+        "summary": "Get a list of fixed fees",
+        "operationId": "ListFixedFees",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Only return fixed fees that are dated after or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Only return fixed fees that are dated before or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Only return fixed fees that are associated with this user",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matterId",
+            "in": "query",
+            "description": "Only return fixed fees that are associated with this matter",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "description": "Only return fixed fees that are associated with this client",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "billed",
+            "in": "query",
+            "description": "If true, only returns fixed fees that are on an invoice, regardless of the invoice state.\nIf false, only returns fixed fees that are not on an invoice.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "invoiceId",
+            "in": "query",
+            "description": "Only return fixed fees billed on this invoice.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: client, matter, user, meta, invoice",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for fixed fees.\nSupported sort fields: date, amount, description\nExample: \"-date,amount\" sorts by date descending, then amount ascending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedFeeListListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "FixedFee"
+        ],
+        "summary": "Create a new fixed fee",
+        "operationId": "CreateFixedFee",
+        "requestBody": {
+          "description": "The fixed fee to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFixedFee"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/fixed-fees/{id}": {
+      "get": {
+        "tags": [
+          "FixedFee"
+        ],
+        "summary": "Get a fixed fee by id",
+        "operationId": "GetFixedFee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the fixed fee",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedFeeDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "FixedFee"
+        ],
+        "summary": "Update a fixed fee",
+        "description": "Updating a fixed fee is only possible if it has not been billed (added to an invoice). \nThe update is \"sparse\", where only the fields that are provided in the request will be updated.",
+        "operationId": "UpdateFixedFee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the fixed fee to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFixedFee"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "FixedFee"
+        ],
+        "summary": "Delete a fixed fee",
+        "description": "Deleting a fixed fee will remove it from the system permanently. Fixed fees that have been\nbilled (added to an invoice) or that are assigned to time entries cannot be deleted.",
+        "operationId": "DeleteFixedFee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the fixed fee to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/invoices": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Get a list of invoices",
+        "description": "Listing invoices can be used to see either billed or collected in the system, including balance due to for clients.",
+        "operationId": "ListInvoices",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter invoices by start date (inclusive)",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter invoices by end date (inclusive)",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "invoiceState",
+            "in": "query",
+            "description": "Filter invoices by state (draft, review, approved, final)",
+            "schema": {
+              "$ref": "#/components/schemas/InvoiceState"
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "description": "Filter invoices by client ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matterId",
+            "in": "query",
+            "description": "Filter invoices by matter ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: client, matter, meta",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for invoices.\nSupported sort fields: client.name, client.reference, invoicedate, amount, balance, invoicenumber, state\nExample: \"client.name,-amount\" sorts by client name, then amount descending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceListListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/matters": {
+      "get": {
+        "tags": [
+          "Matter"
+        ],
+        "summary": "Get a list of matters",
+        "operationId": "ListMatters",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search for matters matching the query string. Returns matters that match partially on either name or reference, or match client name or reference.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reference",
+            "in": "query",
+            "description": "Return matter matching the matter reference (exact match only)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientReference",
+            "in": "query",
+            "description": "Return matters matching the client reference (exact match only)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Only return matters where this user is assigned",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "responsibleId",
+            "in": "query",
+            "description": "Only return matters where this user is responsible",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "originatorId",
+            "in": "query",
+            "description": "Only return matters where this user is the originator",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "description": "Filter by client, only return matters for this client",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "practiceAreaId",
+            "in": "query",
+            "description": "Filter by practice area, only return matters for this practice area",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "description": "Filter by archived- return only archived matters (true) or only active matters (false) or all matters (null)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: client, ledesConfiguration, responsible, originator, practiceArea, meta, customFields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for matters.\nSupported sort fields: name, reference, client.name, client.reference\nExample: \"name,-client.name\" sorts by name ascending, then client name descending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterListListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Matter"
+        ],
+        "summary": "Create a new matter",
+        "description": "If the firm has the QuickBooks Online integration enabled, creating a matter also creates the\ncorresponding customers in QuickBooks. A client that is not yet connected to QuickBooks is created\nthere as a customer, provided the firm is set up to let LeanLaw create its accounting clients, and\nthe matter is created as a sub-customer of that client when the firm bills per matter. A firm that\nbills at the client level gets the client customer only, and no sub-customer for the matter.\nNote that creating a client on its own does not reach QuickBooks — the client is created there as\npart of creating its first matter.\n            \nQuickBooks is never allowed to fail the request: if it is unavailable or rejects the customer, the\nmatter is still created and returned as usual, and it can be connected from the LeanLaw app later.",
+        "operationId": "CreateMatter",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMatter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/matters/{id}": {
+      "get": {
+        "tags": [
+          "Matter"
+        ],
+        "summary": "Get a matter by id",
+        "operationId": "GetMatter",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the matter",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Matter"
+        ],
+        "summary": "Update a matter",
+        "description": "The update is \"sparse\", where only the fields that are provided in the request will be updated.",
+        "operationId": "UpdateMatter",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the matter to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMatter"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatterDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Matter"
+        ],
+        "summary": "Delete a matter",
+        "description": "Deleting a matter will remove it from the system permanently. Matters that have\nany associated activity in the system such as time entries, expenses, or invoices\ncannot be deleted. To archive a matter, use UpdateMatter and set the `Archived` property to true.",
+        "operationId": "DeleteMatter",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the matter to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/practice-areas": {
+      "get": {
+        "tags": [
+          "PracticeArea"
+        ],
+        "summary": "Get all practice areas",
+        "operationId": "ListPracticeAreas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeAreaListIEnumerableResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "PracticeArea"
+        ],
+        "summary": "Create a new practice area",
+        "operationId": "CreatePracticeArea",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePracticeArea"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeAreaListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/practice-areas/{id}": {
+      "put": {
+        "tags": [
+          "PracticeArea"
+        ],
+        "summary": "Update a practice area",
+        "operationId": "UpdatePracticeArea",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the practice area to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePracticeArea"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeAreaListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "PracticeArea"
+        ],
+        "summary": "Delete a practice area",
+        "description": "Practice areas that are assigned to matters cannot be deleted.",
+        "operationId": "DeletePracticeArea",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the practice area to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/time-entries": {
+      "get": {
+        "tags": [
+          "TimeEntry"
+        ],
+        "summary": "Get a list of time entries",
+        "operationId": "ListTimeEntries",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Only return time entries that are dated after or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "Only return time entries that are dated before or including this date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Only return time entries that are associated with this user",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matterId",
+            "in": "query",
+            "description": "Only return time entries that are associated with this matter",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "description": "Only return time entries that are associated with this client",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting parameters for time entries.\nSupported sort fields: date, hours, description, created\nExample: \"-date,hours\" sorts by date descending, then hours ascending",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billingType",
+            "in": "query",
+            "description": "Billing type",
+            "schema": {
+              "$ref": "#/components/schemas/BillingType"
+            }
+          },
+          {
+            "name": "fixedFeeId",
+            "in": "query",
+            "description": "Only return time entries that are associated with this fixed fee",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: client, matter, user, meta, fixedFee, invoice",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "billed",
+            "in": "query",
+            "description": "If true, only returns time entries that are on an invoice, regardless of the invoice state.\nIf false, only returns time entries that are not on an invoice.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "invoiceId",
+            "in": "query",
+            "description": "Only return time entries billed on this invoice.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of items to return (default: 1000, max: 1000)",
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to offset (default: 0)",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "modifiedSince",
+            "in": "query",
+            "description": "Only return results that have the ModifiedDate property after this date and time (optional)",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeEntryListListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "TimeEntry"
+        ],
+        "summary": "Create a new time entry",
+        "operationId": "CreateTimeEntry",
+        "requestBody": {
+          "description": "The time entry to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTimeEntry"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeEntryDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/time-entries/{id}": {
+      "get": {
+        "tags": [
+          "TimeEntry"
+        ],
+        "summary": "Get a time entry by id",
+        "operationId": "GetTimeEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the time entry",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeEntryDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "TimeEntry"
+        ],
+        "summary": "Update a time entry",
+        "description": "Updating a time entry is only possible if it has not been billed (added to an invoice). \nThe update is \"sparse\", where only the fields that are provided in the request will be updated.",
+        "operationId": "UpdateTimeEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the time entry to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Information about the update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTimeEntry"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "TimeEntry"
+        ],
+        "summary": "Delete a time entry",
+        "description": "Deleting a time entry will remove it from the system permanently. Time entries that have been\nbilled (added to an invoice) cannot be deleted.",
+        "operationId": "DeleteTimeEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the time entry to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v2/users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get list of users",
+        "operationId": "ListUsers",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Find a user by their email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "The role to filter users by.",
+            "schema": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search query (searches user by first name, last name, initials, or email)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "queryFullMatch",
+            "in": "query",
+            "description": "If true, the query passed in must match the full field. For example, if passing in \"JO\" it will match\nsomeone with those initials but not the first name \"John\". If false, the query will return record that\npartially match the field. Default: false.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "select",
+            "in": "query",
+            "description": "Used to include additional detail in the response with a comma-separated list of object identifiers. Fields can be prefixed with a minus sign to exclude them.\nSupported fields: customFields",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListIEnumerableResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/{id}": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update a user's custom fields",
+        "description": "Custom fields are the only part of a user that can be changed through the API. Everything else\nabout a user - name, email, role, rates - is managed in LeanLaw itself.",
+        "operationId": "UpdateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the user to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The custom field values to set",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BillingType": {
+        "enum": [
+          "nonBillable",
+          "billable",
+          "fixedFee"
+        ],
+        "type": "string",
+        "description": "The billing type of a time entry"
+      },
+      "ClientBalances": {
+        "required": [
+          "balance",
+          "overdue",
+          "overdue30",
+          "overdue60",
+          "overdue90"
+        ],
+        "type": "object",
+        "properties": {
+          "balance": {
+            "type": "number",
+            "description": "Current account balance- includes all open final invoices",
+            "format": "double"
+          },
+          "overdue": {
+            "type": "number",
+            "description": "Total balances of all overdue invoices",
+            "format": "double"
+          },
+          "overdue30": {
+            "type": "number",
+            "description": "Total balances of all invoices that are overdue more than 30 days",
+            "format": "double"
+          },
+          "overdue60": {
+            "type": "number",
+            "description": "Total balances of all invoices that are overdue more than 60 days",
+            "format": "double"
+          },
+          "overdue90": {
+            "type": "number",
+            "description": "Total balances of all invoices that are overdue more than 90 days",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Financial summary of the client"
+      },
+      "ClientBalancesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ClientBalances"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "ClientDetail": {
+        "required": [
+          "clientId",
+          "contact",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "The unique id of the client",
+            "format": "uuid"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the client - either company name or individual name"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client",
+            "nullable": true
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Internal notes about the client",
+            "nullable": true
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            },
+            "description": "The custom fields set on this record",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A client of the firm with contact information and other detail"
+      },
+      "ClientDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ClientDetail"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "ClientList": {
+        "required": [
+          "clientId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "The unique id of the client",
+            "format": "uuid"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the client - either company name or individual name"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client",
+            "nullable": true
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            },
+            "description": "The custom fields set on this record. Only returned when \"customFields\" is requested via the select parameter.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a client of the firm"
+      },
+      "ClientListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClientList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "ClientReference": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the Client - either company name or individual name"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the Client",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CodeDetail": {
+        "required": [
+          "code",
+          "codeSetId",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The LEDES identifier for the code"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label of the code"
+          },
+          "codeSetId": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Id of code set this code belongs to"
+          },
+          "parentCode": {
+            "type": "string",
+            "description": "The parent code, if this code has a parent",
+            "nullable": true
+          },
+          "selectable": {
+            "type": "boolean",
+            "description": "This code is selectable by the user. If this is false, the code is\nnot valid for assigning to billable items but can still be shown to\nthe user for informational purposes."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a LEDES code"
+      },
+      "CodeList": {
+        "required": [
+          "activity",
+          "codeSets",
+          "expense",
+          "task"
+        ],
+        "type": "object",
+        "properties": {
+          "activity": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeDetail"
+            },
+            "description": "The list of activity codes"
+          },
+          "task": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeDetail"
+            },
+            "description": "The list of task codes"
+          },
+          "expense": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeDetail"
+            },
+            "description": "The list of expense codes"
+          },
+          "codeSets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeSet"
+            },
+            "description": "List of code sets"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the complete list of LEDES code sets"
+      },
+      "CodeListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CodeList"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "CodeSet": {
+        "required": [
+          "codeSetId",
+          "description",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "codeSetId": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The unique identifier of the code set"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label/name of the code set"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the code set"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a set of LEDES codes within a category"
+      },
+      "ConflictInformation": {
+        "type": "object",
+        "properties": {
+          "adverse": {
+            "type": "string",
+            "description": "Adverse party information",
+            "nullable": true
+          },
+          "relatedAdverse": {
+            "type": "string",
+            "description": "Related adverse party information",
+            "nullable": true
+          },
+          "relatedClient": {
+            "type": "string",
+            "description": "Related client information",
+            "nullable": true
+          },
+          "opposing": {
+            "type": "string",
+            "description": "Opposing party information",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Conflict information for a matter"
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "description": "The company name if the client is a company.",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The first name of the client if an individual, or the billing contact in the company",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The last name of the client if an individual, or the billing contact in the company",
+            "nullable": true
+          },
+          "middleName": {
+            "type": "string",
+            "description": "The middle name of the client if an individual, or the billing contact in the company",
+            "nullable": true
+          },
+          "suffix": {
+            "type": "string",
+            "description": "The suffix of the client name (Jr., Sr., III, etc.)",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the client or billing contact",
+            "nullable": true
+          },
+          "emailCC": {
+            "type": "string",
+            "description": "The CC email address for the client or billing contact",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "description": "The primary phone number of client or billing contact",
+            "nullable": true
+          },
+          "cellPhone": {
+            "type": "string",
+            "description": "The cell phone number of client or billing contact",
+            "nullable": true
+          },
+          "otherPhone": {
+            "type": "string",
+            "description": "Additional phone number of client or billing contact",
+            "nullable": true
+          },
+          "fax": {
+            "type": "string",
+            "description": "The fax number of client or billing contact",
+            "nullable": true
+          },
+          "street": {
+            "type": "string",
+            "description": "The street address of client or billing contact. Can have multiple lines.",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "description": "The city of client or billing contact",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "description": "The state or province of client or billing contact",
+            "nullable": true
+          },
+          "zip": {
+            "type": "string",
+            "description": "The ZIP or postal code of client or billing contact",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "description": "The country of client or billing contact",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateClient": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the client"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client",
+            "nullable": true
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about the client",
+            "nullable": true
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValueUpdate"
+            },
+            "description": "Initial values for the client's custom fields. Optional - any custom field not listed is left\nunset. Ids come from GET /v2/custom-fields?entity=client.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "When creating a client you must provide either a company name, or first and last name, or both"
+      },
+      "CreateExpense": {
+        "required": [
+          "amount",
+          "date",
+          "description",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The user associated with the expense. If ommitted, the expense with associated with the firm",
+            "format": "uuid",
+            "nullable": true
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter is required.",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the expense. Required",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the expense. Required"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the expense (Required)",
+            "format": "double"
+          },
+          "expenseCode": {
+            "type": "string",
+            "description": "LEDES expense code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateFixedFee": {
+        "required": [
+          "amount",
+          "date",
+          "description",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The user associated with the fixed fee. If ommitted, the fixed fee with associated with the firm",
+            "format": "uuid",
+            "nullable": true
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter is required.",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the fixed fee. Required",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the fixed fee. Required"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the fixed fee (Required)",
+            "format": "double"
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMatter": {
+        "required": [
+          "clientId",
+          "name",
+          "responsibleId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the matter"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the matter (optional)",
+            "nullable": true
+          },
+          "matterType": {
+            "$ref": "#/components/schemas/MatterType"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client id of the matter (required)",
+            "format": "uuid"
+          },
+          "responsibleId": {
+            "type": "string",
+            "description": "User id for responsible attorney for matter",
+            "format": "uuid"
+          },
+          "originatorId": {
+            "type": "string",
+            "description": "User id for originating attorney for matter (optional)",
+            "format": "uuid",
+            "nullable": true
+          },
+          "opened": {
+            "type": "string",
+            "description": "The date the matter was opened",
+            "format": "date",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Whether the matter is archived (true) or active (false)"
+          },
+          "conflictInformation": {
+            "$ref": "#/components/schemas/ConflictInformation"
+          },
+          "billingInstructions": {
+            "type": "string",
+            "description": "Billing instructions for the matter",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about the matter",
+            "nullable": true
+          },
+          "referralSources": {
+            "type": "string",
+            "description": "Referral sources for the matter",
+            "nullable": true
+          },
+          "practiceAreaId": {
+            "type": "string",
+            "description": "The practice area id for the matter (optional)",
+            "format": "uuid",
+            "nullable": true
+          },
+          "rateGroupId": {
+            "type": "string",
+            "description": "Rate group ID for the matter (optional)",
+            "format": "uuid",
+            "nullable": true
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValueUpdate"
+            },
+            "description": "Initial values for the matter's custom fields. Optional - any custom field not listed is left\nunset. Ids come from GET /v2/custom-fields?entity=matter.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Creating a new matter"
+      },
+      "CreatePracticeArea": {
+        "required": [
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label/name of the practice area"
+          },
+          "default": {
+            "type": "boolean",
+            "description": "Indicates whether this is the default practice area"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a create request for a practice area"
+      },
+      "CreateTimeEntry": {
+        "required": [
+          "date",
+          "description",
+          "hours",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The user the time is for. Optional: when omitted it falls back to the x-leanlaw-userid header, and\nthen to the user the credential itself identifies. Required only when the credential names no user.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter is required.",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the time entry. Required",
+            "format": "date"
+          },
+          "time": {
+            "type": "string",
+            "description": "The time of the time entry. Optional.",
+            "format": "time",
+            "nullable": true
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the time entry. Required"
+          },
+          "hours": {
+            "type": "number",
+            "description": "The number of hours for the time entry. Required",
+            "format": "double"
+          },
+          "rate": {
+            "type": "number",
+            "description": "The rate of the time entry. If not provided, the rate for the user will be used. \nIn most scenarios the rate should not be provided directly here.",
+            "format": "double",
+            "nullable": true
+          },
+          "billingType": {
+            "$ref": "#/components/schemas/BillingType"
+          },
+          "fixedFeeId": {
+            "type": "string",
+            "description": "The id of the fixed fee to associate with this time entry. Optional.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomFieldEntityType": {
+        "enum": [
+          "client",
+          "matter",
+          "user"
+        ],
+        "type": "string",
+        "description": "The entity type a custom field belongs to"
+      },
+      "CustomFieldList": {
+        "required": [
+          "entity",
+          "id",
+          "name",
+          "valueType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The id of the custom field."
+          },
+          "entity": {
+            "$ref": "#/components/schemas/CustomFieldEntityType"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The current name (label) of the field"
+          },
+          "valueType": {
+            "$ref": "#/components/schemas/CustomFieldValueType"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldOption"
+            },
+            "description": "The options available for \"enum\" fields, in display order. Omitted for other value types.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A custom field definition"
+      },
+      "CustomFieldListIEnumerableResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldList"
+            },
+            "description": "The data returned by the API",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "CustomFieldOption": {
+        "required": [
+          "label",
+          "optionId"
+        ],
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "string",
+            "description": "The id of the option. This is the value to use when setting the field on a record.",
+            "format": "uuid"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label of the option"
+          }
+        },
+        "additionalProperties": false,
+        "description": "An option available on an \"enum\" custom field"
+      },
+      "CustomFieldValue": {
+        "required": [
+          "id",
+          "name",
+          "value",
+          "valueType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The id of the custom field, from GET /v2/custom-fields."
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The current name (label) of the field"
+          },
+          "valueType": {
+            "$ref": "#/components/schemas/CustomFieldValueType"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID."
+              },
+              {
+                "type": "number",
+                "description": "When `valueType` is `number`"
+              },
+              {
+                "type": "boolean",
+                "description": "When `valueType` is `boolean`"
+              }
+            ],
+            "description": "The value of the field, typed according to valueType: a string for \"text\", a number for\n\"number\", a boolean for \"boolean\", an ISO-8601 date for \"date\", and the selected option's\nlabel for \"enum\"."
+          },
+          "optionId": {
+            "type": "string",
+            "description": "The id of the selected option, for \"enum\" fields. Use this rather than the label when writing\nthe value back, since labels can be renamed. Omitted for other value types.",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A custom field and its value on a client, matter or user"
+      },
+      "CustomFieldValueType": {
+        "enum": [
+          "text",
+          "boolean",
+          "number",
+          "date",
+          "enum"
+        ],
+        "type": "string",
+        "description": "The type of the custom field. \"Enum\" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property."
+      },
+      "CustomFieldValueUpdate": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The id of the custom field to set. Ids come from GET /v2/custom-fields."
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too"
+              },
+              {
+                "type": "number",
+                "description": "For a `number` field"
+              },
+              {
+                "type": "boolean",
+                "description": "For a `boolean` field"
+              }
+            ],
+            "description": "The value to set, typed according to the field's valueType: a string for \"text\", a number for\n\"number\", a boolean for \"boolean\", an ISO-8601 date (\"yyyy-MM-dd\") for \"date\", and an option\nlabel for \"enum\" (prefer \"optionId\" for those, since labels can be renamed). Numbers, booleans\nand dates may also be sent as strings. Set to null to clear the field."
+          },
+          "optionId": {
+            "type": "string",
+            "description": "The id of the option to select, for \"enum\" fields only. Option ids come from\nGET /v2/custom-fields. Takes precedence over \"value\".",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Sets the value of a single custom field on a record. Only the fields listed are touched -\nany custom field not in the array keeps its current value."
+      },
+      "ExpenseDetail": {
+        "required": [
+          "amount",
+          "billed",
+          "client",
+          "clientId",
+          "date",
+          "description",
+          "matter",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "expenseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The id of the user who is assigned to the expense (If null, the expense is associated with the firm).",
+            "format": "uuid",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The id of the matter that the expense is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client that the expense is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the expense.",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the expense."
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the expense is on an invoice, regardless of the invoice state."
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this expense is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the expense.",
+            "format": "double"
+          },
+          "expenseCode": {
+            "type": "string",
+            "description": "LEDES expense code",
+            "nullable": true
+          },
+          "checkNumber": {
+            "type": "string",
+            "description": "The check number from QuickBooks, if the expense was paid via check. Read-only, QBO-sourced.",
+            "nullable": true
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExpenseDetail"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "ExpenseList": {
+        "required": [
+          "amount",
+          "billed",
+          "clientId",
+          "date",
+          "description",
+          "expenseId",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "expenseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The user who created the expense. If empty/null, the user is unassigned.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter that the expense is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client that the expense is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the expense.",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the expense."
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the expense.",
+            "format": "double"
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the expense is on an invoice, regardless of the invoice state."
+          },
+          "checkNumber": {
+            "type": "string",
+            "description": "The check number from QuickBooks, if the expense was paid via check. Read-only, QBO-sourced.",
+            "nullable": true
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this expense is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "FixedFeeDetail": {
+        "required": [
+          "amount",
+          "billed",
+          "client",
+          "clientId",
+          "date",
+          "description",
+          "fixedFeeId",
+          "matter",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "fixedFeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The id of the user assigned to the fixed fee.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The id of the matter that the fixed fee is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The id of the client that the fixed fee is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the fixed fee.",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the fixed fee."
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the fixed fee.",
+            "format": "double"
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the fixed fee is on an invoice, regardless of the invoice state."
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this fixed fee is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FixedFeeDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FixedFeeDetail"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "FixedFeeList": {
+        "required": [
+          "amount",
+          "billed",
+          "clientId",
+          "date",
+          "description",
+          "fixedFeeId",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "fixedFeeId": {
+            "type": "string",
+            "description": "The id of of the fixed fee",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The id of the user assigned to the fixed fee. If null, the fixed fee is unassigned.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The id of the matter that the fixed fee is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The id of the client that the fixed fee is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the fixed fee.",
+            "format": "date"
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the fixed fee."
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the fixed fee.",
+            "format": "double"
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the fixed fee is on an invoice, regardless of the invoice state."
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this fixed fee is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FixedFeeListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FixedFeeList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "FixedFeeReference": {
+        "required": [
+          "amount",
+          "id",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The id of the fixed fee",
+            "format": "uuid"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label of the fixed fee"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the fixed fee",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "A reference to a fixed fee"
+      },
+      "HealthCheckResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/HealthStatus"
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HealthStatus": {
+        "enum": [
+          "unhealthy",
+          "degraded",
+          "healthy"
+        ],
+        "type": "string"
+      },
+      "InvoiceList": {
+        "required": [
+          "amount",
+          "balance",
+          "clientId",
+          "invoiceDate",
+          "invoiceId",
+          "invoiceNumber",
+          "invoiceState",
+          "matterId"
+        ],
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice.",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The id of the client associated with the invoice.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The id of the matter associated with the invoice. Optional because some \ninvoices may be associated with multiple matters.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "invoiceDate": {
+            "type": "string",
+            "description": "The date of the invoice.",
+            "format": "date"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "The due date of the invoice. Only final invoices will have a due date.",
+            "format": "date",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "description": "The total amount of the invoice.",
+            "format": "double"
+          },
+          "balance": {
+            "type": "number",
+            "description": "The outstanding balance of the invoice.",
+            "format": "double"
+          },
+          "invoiceNumber": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The invoice number."
+          },
+          "invoiceState": {
+            "$ref": "#/components/schemas/InvoiceState"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an invoice in the list response"
+      },
+      "InvoiceListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "InvoiceReference": {
+        "required": [
+          "invoiceAmount",
+          "invoiceBalance",
+          "invoiceDate",
+          "invoiceId",
+          "invoiceNumber",
+          "invoiceState"
+        ],
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice.",
+            "format": "uuid"
+          },
+          "invoiceNumber": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The invoice number."
+          },
+          "invoiceDate": {
+            "type": "string",
+            "description": "The date of the invoice.",
+            "format": "date"
+          },
+          "invoiceState": {
+            "$ref": "#/components/schemas/InvoiceState"
+          },
+          "invoiceAmount": {
+            "type": "number",
+            "description": "The total amount of the invoice.",
+            "format": "double"
+          },
+          "invoiceBalance": {
+            "type": "number",
+            "description": "The outstanding balance of the invoice.",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InvoiceState": {
+        "enum": [
+          "draft",
+          "review",
+          "approved",
+          "final"
+        ],
+        "type": "string",
+        "description": "The state of an invoice"
+      },
+      "MatterDetail": {
+        "required": [
+          "archived",
+          "client",
+          "clientId",
+          "matterId",
+          "matterType",
+          "name",
+          "responsible",
+          "responsibleId"
+        ],
+        "type": "object",
+        "properties": {
+          "matterId": {
+            "type": "string",
+            "description": "The unique identifier of the matter",
+            "format": "uuid"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the matter"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the matter",
+            "nullable": true
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The unique identifier of the client",
+            "format": "uuid"
+          },
+          "matterType": {
+            "$ref": "#/components/schemas/MatterType"
+          },
+          "client": {
+            "$ref": "#/components/schemas/MatterDetailClient"
+          },
+          "responsibleId": {
+            "type": "string",
+            "description": "User id for responsible attorney for matter",
+            "format": "uuid"
+          },
+          "responsible": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "originatorIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List of user ids for originating attorneys for matter",
+            "nullable": true
+          },
+          "originators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserReference"
+            },
+            "description": "List of users that are originating attorneys for matter",
+            "nullable": true
+          },
+          "practiceAreaId": {
+            "type": "string",
+            "description": "The practice area id of the matter",
+            "format": "uuid",
+            "nullable": true
+          },
+          "practiceArea": {
+            "$ref": "#/components/schemas/PracticeAreaReference"
+          },
+          "opened": {
+            "type": "string",
+            "description": "The date the matter was opened",
+            "format": "date",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Whether the matter is archived (true) or active (false)"
+          },
+          "conflictInformation": {
+            "$ref": "#/components/schemas/ConflictInformation"
+          },
+          "billingInstructions": {
+            "type": "string",
+            "description": "Billing instructions for the matter",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about the matter",
+            "nullable": true
+          },
+          "referralSources": {
+            "type": "string",
+            "description": "Referral sources for the matter",
+            "nullable": true
+          },
+          "ledesConfiguration": {
+            "$ref": "#/components/schemas/MatterLedesConfiguration"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            },
+            "description": "The custom fields set on this record",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a matter in the firm"
+      },
+      "MatterDetailClient": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the client - either company name or individual name"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a summary of a client for a matter"
+      },
+      "MatterDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MatterDetail"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "MatterLedesConfiguration": {
+        "required": [
+          "activityCodeRequired",
+          "codeSetIds",
+          "enabled",
+          "expenseCodeRequired",
+          "taskCodeRequired"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether LEDES billing is enabled for the matter"
+          },
+          "activityCodeRequired": {
+            "type": "boolean",
+            "description": "Whether LEDES activity codes are required for time entries and fixed fees on the matter"
+          },
+          "taskCodeRequired": {
+            "type": "boolean",
+            "description": "Whether LEDES task codes are required for time entries and fixed fees on the matter"
+          },
+          "expenseCodeRequired": {
+            "type": "boolean",
+            "description": "Whether LEDES expense codes are required for expenses on the matter"
+          },
+          "codeSetIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "CodeSets available for the matter"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Configuration for LEDES in a matter"
+      },
+      "MatterList": {
+        "required": [
+          "archived",
+          "clientId",
+          "matterId",
+          "matterType",
+          "name",
+          "originatorIds",
+          "responsibleId"
+        ],
+        "type": "object",
+        "properties": {
+          "matterId": {
+            "type": "string",
+            "description": "The unique identifier of the matter",
+            "format": "uuid"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the matter"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the matter",
+            "nullable": true
+          },
+          "matterType": {
+            "$ref": "#/components/schemas/MatterType"
+          },
+          "opened": {
+            "type": "string",
+            "description": "The date the matter was opened",
+            "format": "date",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Whether the matter is archived (true) or active (false)"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client id of the matter",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/MatterListClient"
+          },
+          "responsibleId": {
+            "type": "string",
+            "description": "User id for responsible attorney for matter",
+            "format": "uuid"
+          },
+          "responsible": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "originatorIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "List of user ids for originating attorneys for matter"
+          },
+          "originators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserReference"
+            },
+            "description": "User details for originating attorneys for matter",
+            "nullable": true
+          },
+          "practiceAreaId": {
+            "type": "string",
+            "description": "The practice area id of the matter",
+            "format": "uuid",
+            "nullable": true
+          },
+          "practiceArea": {
+            "$ref": "#/components/schemas/PracticeAreaReference"
+          },
+          "ledesConfiguration": {
+            "$ref": "#/components/schemas/MatterLedesConfiguration"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            },
+            "description": "The custom fields set on this record. Only returned when \"customFields\" is requested via the select parameter.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a matter in the firm"
+      },
+      "MatterListClient": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the client - either company name or individual name"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a summary of a client for a matter"
+      },
+      "MatterListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatterList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "MatterReference": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the matter"
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the matter",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MatterType": {
+        "enum": [
+          "hourly",
+          "fixedFee",
+          "contingency",
+          "probono",
+          "internal"
+        ],
+        "type": "string",
+        "description": "Matter type determines defaults for time entries and certain billing behaviors. The default value is \"hourly\"."
+      },
+      "Metadata": {
+        "required": [
+          "createdAt",
+          "modifiedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "description": "The date the entity was created.",
+            "format": "date-time"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "description": "The date the entity was last modified.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Pagination": {
+        "required": [
+          "limit",
+          "offset",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items to return",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "description": "Number of items to offset",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items available",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "string",
+            "description": "Current sort parameters applied to the results",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Pagination information"
+      },
+      "PracticeAreaList": {
+        "required": [
+          "default",
+          "label",
+          "practiceAreaId"
+        ],
+        "type": "object",
+        "properties": {
+          "practiceAreaId": {
+            "type": "string",
+            "description": "The unique identifier of the practice area",
+            "format": "uuid"
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label/name of the practice area"
+          },
+          "default": {
+            "type": "boolean",
+            "description": "Indicates whether this is the default practice area"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a practice area"
+      },
+      "PracticeAreaListIEnumerableResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PracticeAreaList"
+            },
+            "description": "The data returned by the API",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "PracticeAreaListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PracticeAreaList"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "PracticeAreaReference": {
+        "required": [
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The label/name of the practice area"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a practice area"
+      },
+      "Role": {
+        "enum": [
+          "principal",
+          "attorney",
+          "paralegal",
+          "timekeeper",
+          "operator",
+          "accountant"
+        ],
+        "type": "string",
+        "description": "The role of the user"
+      },
+      "TimeEntryDetail": {
+        "required": [
+          "billed",
+          "billingType",
+          "client",
+          "clientId",
+          "date",
+          "description",
+          "hours",
+          "matter",
+          "matterId",
+          "timeEntryId",
+          "user",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "timeEntryId": {
+            "type": "string",
+            "description": "The id of the time entry.",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The id of the user who created the time entry.",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter id that the time entry is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client id that the time entry is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the time entry. This date is used for billing.",
+            "format": "date"
+          },
+          "time": {
+            "type": "string",
+            "description": "The time of the time entry. Time entries might not have a time, only a date.",
+            "format": "time",
+            "nullable": true
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the time entry."
+          },
+          "hours": {
+            "type": "number",
+            "description": "The number of hours for the time entry.",
+            "format": "double"
+          },
+          "rate": {
+            "type": "number",
+            "description": "The rate of the time entry. Only provided for billable time entries\n(where billingType = \"billable\"). Requires \"read.rates\" scope or \nit will be omitted.",
+            "format": "double",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount for the time entry. Only provided for billable time entries\n(where billingType = \"billable\"). Requires \"read.rates\" scope",
+            "format": "double",
+            "nullable": true
+          },
+          "billingType": {
+            "$ref": "#/components/schemas/BillingType"
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the time entry is on an invoice, regardless of the invoice state."
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this time entry is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "fixedFeeId": {
+            "type": "string",
+            "description": "The id of the fixed fee that the time entry is associated with, if any.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "fixedFee": {
+            "$ref": "#/components/schemas/FixedFeeReference"
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeEntryDetailResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TimeEntryDetail"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "TimeEntryList": {
+        "required": [
+          "billed",
+          "billingType",
+          "clientId",
+          "date",
+          "description",
+          "hours",
+          "matterId",
+          "timeEntryId",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "timeEntryId": {
+            "type": "string",
+            "description": "The id of the time entry.",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "The id of the user who created the time entry.",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter id that the time entry is associated with.",
+            "format": "uuid"
+          },
+          "matter": {
+            "$ref": "#/components/schemas/MatterReference"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client id that the time entry is associated with.",
+            "format": "uuid"
+          },
+          "client": {
+            "$ref": "#/components/schemas/ClientReference"
+          },
+          "date": {
+            "type": "string",
+            "description": "The date of the time entry.",
+            "format": "date"
+          },
+          "time": {
+            "type": "string",
+            "description": "The time of the time entry. Time entries might not have a time, only a date.",
+            "format": "time",
+            "nullable": true
+          },
+          "description": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The description of the time entry."
+          },
+          "hours": {
+            "type": "number",
+            "description": "The number of hours for the time entry.",
+            "format": "double"
+          },
+          "rate": {
+            "type": "number",
+            "description": "The rate of the time entry. Only provided for billable time entries\n(where billingType = \"billable\"). Requires \"read.rates\" scope or \nit will be omitted.",
+            "format": "double",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount for the time entry. Only provided for billable time entries\n(where billingType = \"billable\"). Requires \"read.rates\" scope",
+            "format": "double",
+            "nullable": true
+          },
+          "billingType": {
+            "$ref": "#/components/schemas/BillingType"
+          },
+          "billed": {
+            "type": "boolean",
+            "description": "True if the time entry is on an invoice, regardless of the invoice state."
+          },
+          "invoiceId": {
+            "type": "string",
+            "description": "The id of the invoice this time entry is associated with, if billed.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/InvoiceReference"
+          },
+          "fixedFeeId": {
+            "type": "string",
+            "description": "The id of the fixed fee that the time entry is associated with, if any.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "fixedFee": {
+            "$ref": "#/components/schemas/FixedFeeReference"
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeEntryListListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeEntryList"
+            },
+            "description": "The list of items returned by the API",
+            "nullable": true
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for list responses with pagination Paginationdata"
+      },
+      "UpdateClient": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the client, if not provided, the current name will not be changed",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the client, if not provided, the current reference will not be changed",
+            "nullable": true
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about the client, if not provided, the current notes will not be changed",
+            "nullable": true
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValueUpdate"
+            },
+            "description": "Custom field values to set. Only the fields listed are changed - omit the property entirely to\nleave every custom field alone, and set an entry's value to null to clear that one field.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Update an existing client"
+      },
+      "UpdateExpense": {
+        "type": "object",
+        "properties": {
+          "matterId": {
+            "type": "string",
+            "description": "Update the matter of the expense.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "description": "Update the user of the expense.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "description": "Update the date of the expense",
+            "format": "date",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Update the description of the expense, provide null to keep the current description",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "description": "Update the amount of the expense, provide null to keep the current amount",
+            "format": "double",
+            "nullable": true
+          },
+          "expenseCode": {
+            "type": "string",
+            "description": "LEDES expense code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data for updating an expense"
+      },
+      "UpdateFixedFee": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "The date of the fixed fee.",
+            "format": "date",
+            "nullable": true
+          },
+          "matterId": {
+            "type": "string",
+            "description": "The matter that the fixed fee is associated with.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "description": "The user that the fixed fee is associated with.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the fixed fee.",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "description": "The amount of the fixed fee",
+            "format": "double",
+            "nullable": true
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateMatter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the matter, if not provided, the current name will not be changed",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "description": "A reference number for the matter; if not provided, the current reference will not be changed",
+            "nullable": true
+          },
+          "clientId": {
+            "type": "string",
+            "description": "The client id of the matter - if not provided, the client will not be changed",
+            "format": "uuid",
+            "nullable": true
+          },
+          "responsibleId": {
+            "type": "string",
+            "description": "User id for responsible attorney for matter, if not provided, the current responsible will not be changed",
+            "format": "uuid",
+            "nullable": true
+          },
+          "opened": {
+            "type": "string",
+            "description": "The date the matter was opened, if not provided, the current opened date will not be changed",
+            "format": "date",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "Whether the matter is archived (true) or active (false), if not provided, the current archived state will not be changed",
+            "nullable": true
+          },
+          "conflictInformation": {
+            "$ref": "#/components/schemas/ConflictInformation"
+          },
+          "billingInstructions": {
+            "type": "string",
+            "description": "Billing instructions for the matter, if not provided, the current billing instructions will not be changed",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notes about the matter, if not provided, the current notes will not be changed",
+            "nullable": true
+          },
+          "referralSources": {
+            "type": "string",
+            "description": "Referral sources for the matter, if not provided, the current referral sources will not be changed",
+            "nullable": true
+          },
+          "practiceAreaId": {
+            "type": "string",
+            "description": "Practice area id for the matter, if not provided, the current practice area will not be changed. To unassign the matter from a practice area, set this field to an empty guid (00000000-0000-0000-0000-000000000000)",
+            "format": "uuid",
+            "nullable": true
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValueUpdate"
+            },
+            "description": "Custom field values to set. Only the fields listed are changed - omit the property entirely\nto leave every custom field alone, and set an entry's value to null to clear that one field.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Update an existing matter"
+      },
+      "UpdatePracticeArea": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "The label/name of the practice area; if not provided, it will not be changed",
+            "nullable": true
+          },
+          "default": {
+            "type": "boolean",
+            "description": "Indicates whether this is the default practice area; if not provided, it will not be changed",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an update request for a practice area"
+      },
+      "UpdateTimeEntry": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Update the user of the time entry.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "matterId": {
+            "type": "string",
+            "description": "Update the matter of the time entry.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "description": "Update the date of the time entry",
+            "format": "date",
+            "nullable": true
+          },
+          "time": {
+            "type": "string",
+            "description": "The time of the time entry. Optional.",
+            "format": "time",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Update the description of the time entry, provide null to keep the current description",
+            "nullable": true
+          },
+          "hours": {
+            "type": "number",
+            "description": "Update the hours of the time entry, provide null to keep the current hours",
+            "format": "double",
+            "nullable": true
+          },
+          "rate": {
+            "type": "number",
+            "description": "The rate of the time entry.",
+            "format": "double",
+            "nullable": true
+          },
+          "billingType": {
+            "$ref": "#/components/schemas/BillingType"
+          },
+          "fixedFeeId": {
+            "type": "string",
+            "description": "The id of the fixed fee to associate with this time entry. \nProvide null to keep the existing association (or none if there isn't one).\nProvide Guid.Empty to remove an existing association.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "activityCode": {
+            "type": "string",
+            "description": "LEDES activity code",
+            "nullable": true
+          },
+          "taskCode": {
+            "type": "string",
+            "description": "LEDES task code",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUser": {
+        "type": "object",
+        "properties": {
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValueUpdate"
+            },
+            "description": "Custom field values to set. Only the fields listed are changed - omit the property entirely to\nleave every custom field alone, and set an entry's value to null to clear that one field.\nIds come from GET /v2/custom-fields?entity=user.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Update an existing user. Only custom fields can be set through the API - the rest of a user's\nrecord (name, email, role, rates) is managed in LeanLaw itself."
+      },
+      "UserList": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "name",
+          "role",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The unique identifier of the user",
+            "format": "uuid"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the user"
+          },
+          "firstName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The first name of the user"
+          },
+          "lastName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The last name of the user"
+          },
+          "initials": {
+            "type": "string",
+            "description": "The initials of the user",
+            "nullable": true
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The email address of the user"
+          },
+          "customFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldValue"
+            },
+            "description": "The custom fields set on this record. In a list, only returned when \"customFields\" is requested\nvia the select parameter; PUT /v2/users/{id} always returns them.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A user in the firm"
+      },
+      "UserListIEnumerableResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserList"
+            },
+            "description": "The data returned by the API",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "UserListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserList"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized API response wrapper for single item responses"
+      },
+      "UserReference": {
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the user",
+            "nullable": true
+          },
+          "initials": {
+            "type": "string",
+            "description": "The initials of the user",
+            "nullable": true
+          },
+          "firstName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The first name of the user"
+          },
+          "lastName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "The last name of the user"
+          }
+        },
+        "additionalProperties": false,
+        "description": "A user in the firm"
+      },
+      "Version": {
+        "type": "object",
+        "properties": {
+          "build": {
+            "type": "string",
+            "nullable": true
+          },
+          "updated": {
+            "type": "string",
+            "nullable": true
+          },
+          "branch": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Client"
+    },
+    {
+      "name": "Codes"
+    },
+    {
+      "name": "CustomField"
+    },
+    {
+      "name": "Expense"
+    },
+    {
+      "name": "FixedFee"
+    },
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Invoice"
+    },
+    {
+      "name": "Matter"
+    },
+    {
+      "name": "PracticeArea"
+    },
+    {
+      "name": "TimeEntry"
+    },
+    {
+      "name": "User"
+    }
+  ]
+}

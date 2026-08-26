@@ -1,0 +1,196 @@
+generated: '2026-08-25'
+method: searched
+source: https://platform.leanlaw.io/patterns
+also: https://platform.leanlaw.io/concepts, https://platform.leanlaw.io/auth, openapi/leanlaw-api-openapi.json
+summary: >-
+  LeanLaw follows mainstream JSON REST conventions and documents them explicitly on one page: a data
+  envelope, limit/offset pagination with a total, sparse PUT semantics, a select query parameter for
+  field expansion, a trace id on every response, and a documented status-code contract. It publishes
+  no idempotency mechanism and no dry-run mode.
+auth_style:
+  scheme: bearer
+  header: 'Authorization: Bearer {apikey}'
+  granularity: firm-scoped API key; per-user OAuth only on the MCP surface
+  see: authentication/leanlaw-authentication.yml
+base_url: https://api.leanlaw.io
+versioning:
+  style: uri-path
+  current: v2
+  evidence: all 18 documented paths are prefixed /v2/
+  spec_info_version: v1
+  note: >-
+    The OpenAPI info.version reads "v1" while every path is /v2/ — the document version and the API
+    version disagree. No sunset or deprecation policy is published for v1.
+  see: lifecycle/leanlaw-lifecycle.yml
+response_envelope:
+  style: wrapped
+  data_field: data
+  example: '{"data": {"id": 123, "name": "tim"}}'
+  note: All responses, single and list, are wrapped in a data property.
+pagination:
+  style: limit-offset
+  params:
+    limit: number of items returned
+    offset: starting index
+  max_page_size: 1000
+  response_field: pagination
+  response_shape: '{"limit": 1000, "offset": 0, "total": 2543}'
+  total_included: true
+  cursor_support: false
+field_expansion:
+  param: select
+  style: comma-separated include/exclude list
+  exclude_prefix: '-'
+  examples:
+  - select=contact
+  - select=meta
+  - select=customFields
+  - select=contact,-meta
+  - select=ledesConfiguration
+  note: >-
+    Both an include and an exclude mechanism on one parameter — items included by default can be
+    dropped with a leading hyphen.
+sparse_updates:
+  method: PUT
+  semantics: sparse
+  description: Only properties present in the request body are changed; omitted properties are left
+    as-is. PUT is therefore a partial update, not a replace.
+  caution: >-
+    This is the reverse of the usual REST reading of PUT. A client that assumes replace semantics and
+    omits a field will NOT clear it.
+metadata:
+  field: meta
+  opt_in: select=meta
+  contents: created and modified timestamps
+  note: Most list endpoints omit date stamps unless requested.
+custom_fields:
+  definitions_endpoint: GET /v2/custom-fields
+  values_field: customFields
+  values_opt_in: select=customFields
+  entities: [clients, matters, users]
+  writable: false
+  note: Definitions and values are both read-only through the API; fields are configured inside LeanLaw.
+request_id_tracing:
+  header: x-leanlaw-traceid
+  direction: response
+  always_present: true
+  description: Every response carries a trace id for support escalation.
+server_version_header:
+  header: x-leanlaw-version
+  observed: 0.27.0
+  note: Observed on a live response; not documented.
+rate_limit_signaling:
+  status_code: 429
+  documented_guidance: "Initiate a backup retry strategy"
+  response_headers: none published
+  retry_after: not documented
+  see: rate-limits/leanlaw-rate-limits.yml
+error_envelope:
+  documented_status_codes:
+    '200': GET, PUT and DELETE success
+    '201': POST success
+    '400': invalid request (bad parameters or invalid request data)
+    '401': missing authentication (no API key provided)
+    '403': token not authorized for the action, or invalid
+    '429': throttling
+    '500': server-side error
+  problem_json: false
+  rfc9457: false
+  body_shape: not published
+  in_openapi: false
+  gap: >-
+    The OpenAPI declares ONLY 200 responses across all 35 operations. Every non-2xx code above comes
+    from the prose docs, and no error response body schema is published anywhere.
+  see: errors/leanlaw-problem-types.yml
+content_negotiation:
+  request: application/json
+  response: application/json
+identifiers:
+  internal: GUID
+  fields: clientId, matterId, timeEntryId, expenseId, fixedFeeId, invoiceId, userId, practiceAreaId
+  firm_facing: >-
+    A separate `reference` property carries the firm's own Client ID / Matter ID, which is distinct
+    from the internal GUID and may be absent.
+idempotency:
+  supported: false
+  status: na
+  idempotency_key_header: none
+  evidence: >-
+    No Idempotency-Key header, no idempotent-retry guidance and no request-deduplication mechanism is
+    documented on https://platform.leanlaw.io/patterns or anywhere in the OpenAPI. GET, PUT and DELETE
+    are naturally idempotent by HTTP semantics, but the six POST creates (client, matter, time entry,
+    expense, fixed fee, practice area) have no deduplication key, so a retried create after a timeout
+    will produce a duplicate record.
+  note: >-
+    Recorded as unsupported, not as unknown. This is a real gap for agent use: the docs tell a caller
+    to retry on 429 but give them no safe way to retry a create.
+dry_run_mode:
+  supported: false
+  status: na
+  evidence: No preview, validate-only, simulate or dry-run parameter appears in the OpenAPI or docs.
+reversibility:
+  status: documented
+  grade_basis: >-
+    Reversal paths exist and are explicit — every mutable entity has a DELETE operation and PUT is
+    sparse, so a field-level change can be re-applied. But LeanLaw publishes NO window, retention
+    period, undo horizon or restore path anywhere in its docs or contract, so this cannot be graded
+    verified.
+  surfaces:
+  - write_operation: CreateClient
+    operation_id: CreateClient
+    reversal: DeleteClient
+    reversal_operation_id: DeleteClient
+    window: not stated
+    restore_after_delete: not published
+  - write_operation: CreateMatter
+    operation_id: CreateMatter
+    reversal: DeleteMatter
+    reversal_operation_id: DeleteMatter
+    window: not stated
+    caveat: >-
+      Per the 2026-08-17 changelog entry, creating a matter can also create a customer and
+      sub-customer in QuickBooks Online. DeleteMatter is not documented as reversing that QuickBooks
+      side effect, so this write is only partially reversible through the API.
+  - write_operation: CreateTimeEntry
+    operation_id: CreateTimeEntry
+    reversal: DeleteTimeEntry
+    reversal_operation_id: DeleteTimeEntry
+    window: not stated
+    caveat: >-
+      Time entries carry invoice linkage (invoiceId / invoice). Whether a billed entry can still be
+      deleted, and what that does to the invoice, is not documented.
+  - write_operation: CreateExpense
+    operation_id: CreateExpense
+    reversal: DeleteExpense
+    reversal_operation_id: DeleteExpense
+    window: not stated
+  - write_operation: CreateFixedFee
+    operation_id: CreateFixedFee
+    reversal: DeleteFixedFee
+    reversal_operation_id: DeleteFixedFee
+    window: not stated
+  - write_operation: CreatePracticeArea
+    operation_id: CreatePracticeArea
+    reversal: DeletePracticeArea
+    reversal_operation_id: DeletePracticeArea
+    window: not stated
+  - write_operation: UpdateUser
+    operation_id: UpdateUser
+    reversal: none
+    note: No delete/deactivate operation is published for users.
+  read_only_surfaces:
+  - Invoices (ListInvoices only)
+  - Client balances (GetClientBalances only)
+  - LEDES codes (GetCodes only)
+  - Custom field definitions and values (read-only by design)
+  gaps:
+  - No soft-delete, trash, or restore endpoint is published.
+  - No retention window is stated for any deleted entity.
+  - No reversal is documented for the QuickBooks Online records a matter creation produces.
+cross_references:
+  errors: errors/leanlaw-problem-types.yml
+  lifecycle: lifecycle/leanlaw-lifecycle.yml
+  authentication: authentication/leanlaw-authentication.yml
+  scopes: scopes/leanlaw-scopes.yml
+  rate_limits: rate-limits/leanlaw-rate-limits.yml
+  data_model: data-model/leanlaw-data-model.yml

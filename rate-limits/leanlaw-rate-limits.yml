@@ -1,0 +1,40 @@
+generated: '2026-08-25'
+method: searched
+source: https://platform.leanlaw.io/patterns
+docs: https://platform.leanlaw.io/patterns
+limit_count: 0
+note: >-
+  LeanLaw acknowledges throttling but publishes no numbers. The docs state a 429 is returned when
+  "the caller has issued too many requests" and instruct the caller to "initiate a backup retry
+  strategy", but no rate, window, burst allowance, quota or per-scope limit is stated anywhere on the
+  developer portal, and no RateLimit-* / X-RateLimit-* / Retry-After header is documented. This is an
+  honest zero: the limit exists and is enforced, it is simply not published.
+exhaustion:
+  status_code: 429
+  documented: true
+  guidance: "Initiate a backup retry strategy"
+  retry_after_header: not documented
+response_headers:
+  published: none
+  observed:
+  - name: x-leanlaw-traceid
+    purpose: request tracing (not a rate-limit signal)
+  - name: x-leanlaw-version
+    purpose: server version (not a rate-limit signal)
+  note: >-
+    Probed against a live unauthenticated request to https://api.leanlaw.io/mcp (401). No rate-limit
+    family headers were present. Authenticated probing was not possible without a firm API key.
+limits: []
+related_ceilings:
+- name: max page size
+  value: 1000
+  scope: per list request
+  source: https://platform.leanlaw.io/patterns
+  note: >-
+    A pagination ceiling, not a rate limit — but it is the only published numeric bound on how much
+    a caller can pull in one request.
+gaps:
+- No published requests-per-second/minute/hour figure.
+- No Retry-After on the documented 429, so backoff cannot be server-directed.
+- No rate-limit headers, so a client cannot see how close it is to the limit before being throttled.
+- No idempotency key, so the retry the docs recommend is unsafe for POST.
