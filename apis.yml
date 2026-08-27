@@ -32,43 +32,6 @@ tags:
 - LegalTech
 - SaaS
 apis:
-- aid: leanlaw:leanlaw-api
-  name: LeanLaw API
-  description: >-
-    The LeanLaw REST API (v2) provides programmatic access to a LeanLaw law-firm account — clients,
-    matters, time entries, expenses, fixed fees, invoices, practice areas, custom field definitions,
-    users, client balances and LEDES activity/task/expense codes. Requests are authenticated with a
-    firm-scoped API key sent as an HTTP bearer token, responses are wrapped in a data envelope with
-    limit/offset pagination, and PUT requests use sparse update semantics.
-  humanURL: https://platform.leanlaw.io/start
-  baseURL: https://api.leanlaw.io
-  tags:
-  - Legal Billing
-  - Time Tracking
-  - Invoicing
-  - Matter Management
-  - Accounting
-  properties:
-  - type: OpenAPI
-    url: openapi/leanlaw-api-openapi.json
-  - type: Documentation
-    url: https://platform.leanlaw.io/start
-  - type: APIReference
-    url: https://platform.leanlaw.io/api
-  - type: GettingStarted
-    url: https://platform.leanlaw.io/start
-  - type: Authentication
-    url: authentication/leanlaw-authentication.yml
-  - type: Overlay
-    url: overlays/leanlaw-api-overlay.yaml
-  - type: ErrorCatalog
-    url: errors/leanlaw-problem-types.yml
-  - type: DataModel
-    url: data-model/leanlaw-data-model.yml
-  - type: Conventions
-    url: conventions/leanlaw-conventions.yml
-  - type: RateLimits
-    url: rate-limits/leanlaw-rate-limits.yml
 - aid: leanlaw:leanlaw-mcp
   name: LeanLaw MCP Server
   description: >-
@@ -92,12 +55,274 @@ apis:
     url: scopes/leanlaw-scopes.yml
   - type: Documentation
     url: https://platform.leanlaw.io/agents
+- aid: leanlaw:leanlaw-client-api
+  name: LeanLaw Client API
+  description: The Client API from LeanLaw — 3 operation(s) for client.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Client
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-client-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-codes-api
+  name: LeanLaw Codes API
+  description: The Codes API from LeanLaw — 1 operation(s) for codes.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Codes
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-codes-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-customfield-api
+  name: LeanLaw Custom Field API
+  description: The CustomField API from LeanLaw — 1 operation(s) for customfield.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - CustomField
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-customfield-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-expense-api
+  name: LeanLaw Expense API
+  description: The Expense API from LeanLaw — 2 operation(s) for expense.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Expense
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-expense-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-fixedfee-api
+  name: LeanLaw Fixed Fee API
+  description: The FixedFee API from LeanLaw — 2 operation(s) for fixedfee.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - FixedFee
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-fixedfee-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-invoice-api
+  name: LeanLaw Invoice API
+  description: The Invoice API from LeanLaw — 1 operation(s) for invoice.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Invoice
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-invoice-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-matter-api
+  name: LeanLaw Matter API
+  description: The Matter API from LeanLaw — 2 operation(s) for matter.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - Matter
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-matter-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-practicearea-api
+  name: LeanLaw Practice Area API
+  description: The PracticeArea API from LeanLaw — 2 operation(s) for practicearea.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - PracticeArea
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-practicearea-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-timeentry-api
+  name: LeanLaw Time Entry API
+  description: The TimeEntry API from LeanLaw — 2 operation(s) for timeentry.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - TimeEntry
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-timeentry-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-user-api
+  name: LeanLaw User API
+  description: The User API from LeanLaw — 2 operation(s) for user.
+  humanURL: https://platform.leanlaw.io/start
+  baseURL: https://api.leanlaw.io
+  tags:
+  - User
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-user-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/leanlaw-api-overlay.yaml
 - type: Website
   url: https://www.leanlaw.co/
 - type: DeveloperPortal
