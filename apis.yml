@@ -10,6 +10,18 @@ description: >-
   expenses, fixed fees, invoices, practice areas, custom fields, users and LEDES billing codes, with
   an OpenAPI 3.0.4 specification, a Zudoku-powered developer portal at platform.leanlaw.io, and a
   remote MCP server for AI assistants that is currently in private beta.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.leanlaw.co/images/og-default.png
 url: https://raw.githubusercontent.com/api-evangelist/leanlaw/refs/heads/main/apis.yml
 x-type: company
