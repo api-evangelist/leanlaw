@@ -1,0 +1,25 @@
+slug: leanlaw
+provider: LeanLaw
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Healthcare Providers
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Matter
+  spec_file: leanlaw-matter-api-openapi.yml
+  capability_id: BC-150.50
+  capability_id_l1: BC-150
+  capability_name: Legal Operations Management
+  confidence: 0.75
+  evidence: POST /v2/matters CreateMatter Create a new matter; schemas MatterDetail, MatterLedesConfiguration,
+    ConflictInformation, PracticeAreaReference
+  reason: Full lifecycle management of legal matters, including conflict information and LEDES configuration
+    — Legal Operations Management explicitly includes matter management.

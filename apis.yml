@@ -333,6 +333,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/leanlaw-capability-edges.yml
+  name: LeanLaw Business Capability Map
 - type: Overlay
   url: overlays/leanlaw-api-overlay.yaml
 - type: Website
