@@ -41,6 +41,20 @@ tags:
 - Practice Management
 - QuickBooks
 - Payments
+- Legal Tech
+- Software-as-a-Service
+tags_raw:
+- Legal
+- Legal Billing
+- Law Firms
+- Time Tracking
+- Billing
+- Invoicing
+- Accounting
+- Trust Accounting
+- Practice Management
+- QuickBooks
+- Payments
 - LegalTech
 - SaaS
 apis:
@@ -73,6 +87,8 @@ apis:
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
+  - Clients
+  tags_raw:
   - Client
   properties:
   - type: OpenAPI
@@ -125,6 +141,8 @@ apis:
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
+  - Custom Field
+  tags_raw:
   - CustomField
   properties:
   - type: OpenAPI
@@ -281,6 +299,8 @@ apis:
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
+  - Time entry
+  tags_raw:
   - TimeEntry
   properties:
   - type: OpenAPI
