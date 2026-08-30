@@ -1,0 +1,819 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Matter API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: Matter
+paths:
+  /v2/matters:
+    get:
+      tags:
+      - Matter
+      summary: Get a list of matters
+      operationId: ListMatters
+      parameters:
+      - name: query
+        in: query
+        description: Search for matters matching the query string. Returns matters that match partially on either name or reference, or match client name or reference.
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: Return matter matching the matter reference (exact match only)
+        schema:
+          type: string
+      - name: clientReference
+        in: query
+        description: Return matters matching the client reference (exact match only)
+        schema:
+          type: string
+      - name: userId
+        in: query
+        description: Only return matters where this user is assigned
+        schema:
+          type: string
+          format: uuid
+      - name: responsibleId
+        in: query
+        description: Only return matters where this user is responsible
+        schema:
+          type: string
+          format: uuid
+      - name: originatorId
+        in: query
+        description: Only return matters where this user is the originator
+        schema:
+          type: string
+          format: uuid
+      - name: clientId
+        in: query
+        description: Filter by client, only return matters for this client
+        schema:
+          type: string
+          format: uuid
+      - name: practiceAreaId
+        in: query
+        description: Filter by practice area, only return matters for this practice area
+        schema:
+          type: string
+          format: uuid
+      - name: archived
+        in: query
+        description: Filter by archived- return only archived matters (true) or only active matters (false) or all matters (null)
+        schema:
+          type: boolean
+      - name: select
+        in: query
+        description: 'Used to include additional detail in the response with a comma separated list of object identifiers. Fields can be prefixed with a minus sign to exclude them.
+
+          Supported fields: client, ledesConfiguration, responsible, originator, practiceArea, meta, customFields'
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sorting parameters for matters.
+
+          Supported sort fields: name, reference, client.name, client.reference
+
+          Example: "name,-client.name" sorts by name ascending, then client name descending'
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of items to return (default: 1000, max: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: 'Number of items to offset (default: 0)'
+        schema:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+      - name: modifiedSince
+        in: query
+        description: Only return results that have the ModifiedDate property after this date and time (optional)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterListListResponse'
+    post:
+      tags:
+      - Matter
+      summary: Create a new matter
+      description: "If the firm has the QuickBooks Online integration enabled, creating a matter also creates the\ncorresponding customers in QuickBooks. A client that is not yet connected to QuickBooks is created\nthere as a customer, provided the firm is set up to let LeanLaw create its accounting clients, and\nthe matter is created as a sub-customer of that client when the firm bills per matter. A firm that\nbills at the client level gets the client customer only, and no sub-customer for the matter.\nNote that creating a client on its own does not reach QuickBooks — the client is created there as\npart of creating its first matter.\n            \nQuickBooks is never allowed to fail the request: if it is unavailable or rejects the customer, the\nmatter is still created and returned as usual, and it can be connected from the LeanLaw app later."
+      operationId: CreateMatter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMatter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDetailResponse'
+  /v2/matters/{id}:
+    get:
+      tags:
+      - Matter
+      summary: Get a matter by id
+      operationId: GetMatter
+      parameters:
+      - name: id
+        in: path
+        description: The id of the matter
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDetailResponse'
+    put:
+      tags:
+      - Matter
+      summary: Update a matter
+      description: The update is "sparse", where only the fields that are provided in the request will be updated.
+      operationId: UpdateMatter
+      parameters:
+      - name: id
+        in: path
+        description: The id of the matter to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Information about the update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMatter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDetailResponse'
+    delete:
+      tags:
+      - Matter
+      summary: Delete a matter
+      description: 'Deleting a matter will remove it from the system permanently. Matters that have
+
+        any associated activity in the system such as time entries, expenses, or invoices
+
+        cannot be deleted. To archive a matter, use UpdateMatter and set the `Archived` property to true.'
+      operationId: DeleteMatter
+      parameters:
+      - name: id
+        in: path
+        description: The id of the matter to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    PracticeAreaReference:
+      required:
+      - label
+      type: object
+      properties:
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the practice area
+      additionalProperties: false
+      description: Represents a practice area
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    CustomFieldValueUpdate:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field to set. Ids come from GET /v2/custom-fields.
+        value:
+          oneOf:
+          - type: string
+            description: For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too
+          - type: number
+            description: For a `number` field
+          - type: boolean
+            description: For a `boolean` field
+          description: 'The value to set, typed according to the field''s valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date ("yyyy-MM-dd") for "date", and an option
+
+            label for "enum" (prefer "optionId" for those, since labels can be renamed). Numbers, booleans
+
+            and dates may also be sent as strings. Set to null to clear the field.'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the option to select, for "enum" fields only. Option ids come from
+
+            GET /v2/custom-fields. Takes precedence over "value".'
+          format: uuid
+      additionalProperties: false
+      description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
+
+        any custom field not in the array keeps its current value.'
+    MatterListClient:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+      additionalProperties: false
+      description: Represents a summary of a client for a matter
+    MatterLedesConfiguration:
+      required:
+      - activityCodeRequired
+      - codeSetIds
+      - enabled
+      - expenseCodeRequired
+      - taskCodeRequired
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether LEDES billing is enabled for the matter
+        activityCodeRequired:
+          type: boolean
+          description: Whether LEDES activity codes are required for time entries and fixed fees on the matter
+        taskCodeRequired:
+          type: boolean
+          description: Whether LEDES task codes are required for time entries and fixed fees on the matter
+        expenseCodeRequired:
+          type: boolean
+          description: Whether LEDES expense codes are required for expenses on the matter
+        codeSetIds:
+          type: array
+          items:
+            type: string
+          description: CodeSets available for the matter
+      additionalProperties: false
+      description: Configuration for LEDES in a matter
+    MatterType:
+      enum:
+      - hourly
+      - fixedFee
+      - contingency
+      - probono
+      - internal
+      type: string
+      description: Matter type determines defaults for time entries and certain billing behaviors. The default value is "hourly".
+    MatterDetailClient:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+      additionalProperties: false
+      description: Represents a summary of a client for a matter
+    MatterList:
+      required:
+      - archived
+      - clientId
+      - matterId
+      - matterType
+      - name
+      - originatorIds
+      - responsibleId
+      type: object
+      properties:
+        matterId:
+          type: string
+          description: The unique identifier of the matter
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter
+        matterType:
+          $ref: '#/components/schemas/MatterType'
+        opened:
+          type:
+          - string
+          - 'null'
+          description: The date the matter was opened
+          format: date
+        archived:
+          type: boolean
+          description: Whether the matter is archived (true) or active (false)
+        clientId:
+          type: string
+          description: The client id of the matter
+          format: uuid
+        client:
+          $ref: '#/components/schemas/MatterListClient'
+        responsibleId:
+          type: string
+          description: User id for responsible attorney for matter
+          format: uuid
+        responsible:
+          $ref: '#/components/schemas/UserReference'
+        originatorIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of user ids for originating attorneys for matter
+        originators:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserReference'
+          description: User details for originating attorneys for matter
+        practiceAreaId:
+          type:
+          - string
+          - 'null'
+          description: The practice area id of the matter
+          format: uuid
+        practiceArea:
+          $ref: '#/components/schemas/PracticeAreaReference'
+        ledesConfiguration:
+          $ref: '#/components/schemas/MatterLedesConfiguration'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+          description: The custom fields set on this record. Only returned when "customFields" is requested via the select parameter.
+      additionalProperties: false
+      description: Represents a matter in the firm
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    CreateMatter:
+      required:
+      - clientId
+      - name
+      - responsibleId
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter (optional)
+        matterType:
+          $ref: '#/components/schemas/MatterType'
+        clientId:
+          type: string
+          description: The client id of the matter (required)
+          format: uuid
+        responsibleId:
+          type: string
+          description: User id for responsible attorney for matter
+          format: uuid
+        originatorId:
+          type:
+          - string
+          - 'null'
+          description: User id for originating attorney for matter (optional)
+          format: uuid
+        opened:
+          type:
+          - string
+          - 'null'
+          description: The date the matter was opened
+          format: date
+        archived:
+          type: boolean
+          description: Whether the matter is archived (true) or active (false)
+        conflictInformation:
+          $ref: '#/components/schemas/ConflictInformation'
+        billingInstructions:
+          type:
+          - string
+          - 'null'
+          description: Billing instructions for the matter
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the matter
+        referralSources:
+          type:
+          - string
+          - 'null'
+          description: Referral sources for the matter
+        practiceAreaId:
+          type:
+          - string
+          - 'null'
+          description: The practice area id for the matter (optional)
+          format: uuid
+        rateGroupId:
+          type:
+          - string
+          - 'null'
+          description: Rate group ID for the matter (optional)
+          format: uuid
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Initial values for the matter''s custom fields. Optional - any custom field not listed is left
+
+            unset. Ids come from GET /v2/custom-fields?entity=matter.'
+      additionalProperties: false
+      description: Creating a new matter
+    MatterDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MatterDetail'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CustomFieldValue:
+      required:
+      - id
+      - name
+      - value
+      - valueType
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field, from GET /v2/custom-fields.
+        name:
+          minLength: 1
+          type: string
+          description: The current name (label) of the field
+        valueType:
+          $ref: '#/components/schemas/CustomFieldValueType'
+        value:
+          oneOf:
+          - type: string
+            description: When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID.
+          - type: number
+            description: When `valueType` is `number`
+          - type: boolean
+            description: When `valueType` is `boolean`
+          description: 'The value of the field, typed according to valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date for "date", and the selected option''s
+
+            label for "enum".'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the selected option, for "enum" fields. Use this rather than the label when writing
+
+            the value back, since labels can be renamed. Omitted for other value types.'
+          format: uuid
+      additionalProperties: false
+      description: A custom field and its value on a client, matter or user
+    ConflictInformation:
+      type: object
+      properties:
+        adverse:
+          type:
+          - string
+          - 'null'
+          description: Adverse party information
+        relatedAdverse:
+          type:
+          - string
+          - 'null'
+          description: Related adverse party information
+        relatedClient:
+          type:
+          - string
+          - 'null'
+          description: Related client information
+        opposing:
+          type:
+          - string
+          - 'null'
+          description: Opposing party information
+      additionalProperties: false
+      description: Conflict information for a matter
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    UpdateMatter:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the matter, if not provided, the current name will not be changed
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter; if not provided, the current reference will not be changed
+        clientId:
+          type:
+          - string
+          - 'null'
+          description: The client id of the matter - if not provided, the client will not be changed
+          format: uuid
+        responsibleId:
+          type:
+          - string
+          - 'null'
+          description: User id for responsible attorney for matter, if not provided, the current responsible will not be changed
+          format: uuid
+        opened:
+          type:
+          - string
+          - 'null'
+          description: The date the matter was opened, if not provided, the current opened date will not be changed
+          format: date
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the matter is archived (true) or active (false), if not provided, the current archived state will not be changed
+        conflictInformation:
+          $ref: '#/components/schemas/ConflictInformation'
+        billingInstructions:
+          type:
+          - string
+          - 'null'
+          description: Billing instructions for the matter, if not provided, the current billing instructions will not be changed
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the matter, if not provided, the current notes will not be changed
+        referralSources:
+          type:
+          - string
+          - 'null'
+          description: Referral sources for the matter, if not provided, the current referral sources will not be changed
+        practiceAreaId:
+          type:
+          - string
+          - 'null'
+          description: Practice area id for the matter, if not provided, the current practice area will not be changed. To unassign the matter from a practice area, set this field to an empty guid (00000000-0000-0000-0000-000000000000)
+          format: uuid
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely
+
+            to leave every custom field alone, and set an entry''s value to null to clear that one field.'
+      additionalProperties: false
+      description: Update an existing matter
+    MatterListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/MatterList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    MatterDetail:
+      required:
+      - archived
+      - client
+      - clientId
+      - matterId
+      - matterType
+      - name
+      - responsible
+      - responsibleId
+      type: object
+      properties:
+        matterId:
+          type: string
+          description: The unique identifier of the matter
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter
+        clientId:
+          type: string
+          description: The unique identifier of the client
+          format: uuid
+        matterType:
+          $ref: '#/components/schemas/MatterType'
+        client:
+          $ref: '#/components/schemas/MatterDetailClient'
+        responsibleId:
+          type: string
+          description: User id for responsible attorney for matter
+          format: uuid
+        responsible:
+          $ref: '#/components/schemas/UserReference'
+        originatorIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: List of user ids for originating attorneys for matter
+        originators:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserReference'
+          description: List of users that are originating attorneys for matter
+        practiceAreaId:
+          type:
+          - string
+          - 'null'
+          description: The practice area id of the matter
+          format: uuid
+        practiceArea:
+          $ref: '#/components/schemas/PracticeAreaReference'
+        opened:
+          type:
+          - string
+          - 'null'
+          description: The date the matter was opened
+          format: date
+        archived:
+          type: boolean
+          description: Whether the matter is archived (true) or active (false)
+        conflictInformation:
+          $ref: '#/components/schemas/ConflictInformation'
+        billingInstructions:
+          type:
+          - string
+          - 'null'
+          description: Billing instructions for the matter
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the matter
+        referralSources:
+          type:
+          - string
+          - 'null'
+          description: Referral sources for the matter
+        ledesConfiguration:
+          $ref: '#/components/schemas/MatterLedesConfiguration'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+          description: The custom fields set on this record
+      additionalProperties: false
+      description: Represents a matter in the firm
+    UserReference:
+      required:
+      - firstName
+      - lastName
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the user
+        initials:
+          type:
+          - string
+          - 'null'
+          description: The initials of the user
+        firstName:
+          minLength: 1
+          type: string
+          description: The first name of the user
+        lastName:
+          minLength: 1
+          type: string
+          description: The last name of the user
+      additionalProperties: false
+      description: A user in the firm
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

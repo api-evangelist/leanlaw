@@ -1,0 +1,249 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Invoice API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: Invoice
+paths:
+  /v2/invoices:
+    get:
+      tags:
+      - Invoice
+      summary: Get a list of invoices
+      description: Listing invoices can be used to see either billed or collected in the system, including balance due to for clients.
+      operationId: ListInvoices
+      parameters:
+      - name: startDate
+        in: query
+        description: Filter invoices by start date (inclusive)
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: Filter invoices by end date (inclusive)
+        schema:
+          type: string
+          format: date
+      - name: invoiceState
+        in: query
+        description: Filter invoices by state (draft, review, approved, final)
+        schema:
+          $ref: '#/components/schemas/InvoiceState'
+      - name: clientId
+        in: query
+        description: Filter invoices by client ID
+        schema:
+          type: string
+          format: uuid
+      - name: matterId
+        in: query
+        description: Filter invoices by matter ID
+        schema:
+          type: string
+          format: uuid
+      - name: select
+        in: query
+        description: 'Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.
+
+          Supported fields: client, matter, meta'
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sorting parameters for invoices.
+
+          Supported sort fields: client.name, client.reference, invoicedate, amount, balance, invoicenumber, state
+
+          Example: "client.name,-amount" sorts by client name, then amount descending'
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of items to return (default: 1000, max: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: 'Number of items to offset (default: 0)'
+        schema:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+      - name: modifiedSince
+        in: query
+        description: Only return results that have the ModifiedDate property after this date and time (optional)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListListResponse'
+components:
+  schemas:
+    ClientReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the Client
+      additionalProperties: false
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    InvoiceList:
+      required:
+      - amount
+      - balance
+      - clientId
+      - invoiceDate
+      - invoiceId
+      - invoiceNumber
+      - invoiceState
+      - matterId
+      type: object
+      properties:
+        invoiceId:
+          type: string
+          description: The id of the invoice.
+          format: uuid
+        clientId:
+          type: string
+          description: The id of the client associated with the invoice.
+          format: uuid
+        client:
+          $ref: '#/components/schemas/ClientReference'
+        matterId:
+          type: string
+          description: "The id of the matter associated with the invoice. Optional because some \ninvoices may be associated with multiple matters."
+          format: uuid
+        matter:
+          $ref: '#/components/schemas/MatterReference'
+        invoiceDate:
+          type: string
+          description: The date of the invoice.
+          format: date
+        dueDate:
+          type:
+          - string
+          - 'null'
+          description: The due date of the invoice. Only final invoices will have a due date.
+          format: date
+        amount:
+          type: number
+          description: The total amount of the invoice.
+          format: double
+        balance:
+          type: number
+          description: The outstanding balance of the invoice.
+          format: double
+        invoiceNumber:
+          minLength: 1
+          type: string
+          description: The invoice number.
+        invoiceState:
+          $ref: '#/components/schemas/InvoiceState'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+      additionalProperties: false
+      description: Represents an invoice in the list response
+    InvoiceListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/InvoiceList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
+    MatterReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,122 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Codes API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: Codes
+paths:
+  /v2/codes:
+    get:
+      tags:
+      - Codes
+      summary: Get all LEDES codesets and codes
+      operationId: GetCodes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeListResponse'
+components:
+  schemas:
+    CodeSet:
+      required:
+      - codeSetId
+      - description
+      - label
+      type: object
+      properties:
+        codeSetId:
+          minLength: 1
+          type: string
+          description: The unique identifier of the code set
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the code set
+        description:
+          minLength: 1
+          type: string
+          description: The description of the code set
+      additionalProperties: false
+      description: Represents a set of LEDES codes within a category
+    CodeListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CodeList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CodeDetail:
+      required:
+      - code
+      - codeSetId
+      - label
+      type: object
+      properties:
+        code:
+          minLength: 1
+          type: string
+          description: The LEDES identifier for the code
+        label:
+          minLength: 1
+          type: string
+          description: The label of the code
+        codeSetId:
+          minLength: 1
+          type: string
+          description: Id of code set this code belongs to
+        parentCode:
+          type:
+          - string
+          - 'null'
+          description: The parent code, if this code has a parent
+        selectable:
+          type: boolean
+          description: 'This code is selectable by the user. If this is false, the code is
+
+            not valid for assigning to billable items but can still be shown to
+
+            the user for informational purposes.'
+      additionalProperties: false
+      description: Represents a LEDES code
+    CodeList:
+      required:
+      - activity
+      - codeSets
+      - expense
+      - task
+      type: object
+      properties:
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of activity codes
+        task:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of task codes
+        expense:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of expense codes
+        codeSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeSet'
+          description: List of code sets
+      additionalProperties: false
+      description: Represents the complete list of LEDES code sets
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,587 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Client API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: Client
+paths:
+  /v2/clients:
+    get:
+      tags:
+      - Client
+      summary: Get a list of clients
+      operationId: ListClients
+      parameters:
+      - name: query
+        in: query
+        description: Search for clients matching the query string. Returns clients that match partially on either name or reference.
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: Return client matching the reference (exact match only)
+        schema:
+          type: string
+      - name: select
+        in: query
+        description: 'Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.
+
+          Supported fields: contact, meta, customFields'
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sorting parameters for clients.
+
+          Supported sort fields: name, reference
+
+          Example: "name,-reference" sorts by name ascending, then reference descending'
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of items to return (default: 1000, max: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: 'Number of items to offset (default: 0)'
+        schema:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+      - name: modifiedSince
+        in: query
+        description: Only return results that have the ModifiedDate property after this date and time (optional)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientListListResponse'
+    post:
+      tags:
+      - Client
+      summary: Create a new client
+      operationId: CreateClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClient'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDetailResponse'
+  /v2/clients/{id}:
+    get:
+      tags:
+      - Client
+      summary: Get a client by id
+      operationId: GetClient
+      parameters:
+      - name: id
+        in: path
+        description: The id of the client
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDetailResponse'
+    put:
+      tags:
+      - Client
+      summary: Update a client
+      operationId: UpdateClient
+      parameters:
+      - name: id
+        in: path
+        description: The id of the client to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Information about the update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClient'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDetailResponse'
+    delete:
+      tags:
+      - Client
+      summary: Delete a client
+      description: 'Deleting a client will remove it from the system permanently. Clients that have
+
+        associated matters in the system cannot be deleted.'
+      operationId: DeleteClient
+      parameters:
+      - name: id
+        in: path
+        description: The id of the client to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+  /v2/clients/{id}/balances:
+    get:
+      tags:
+      - Client
+      summary: Get the invoice balances for a client
+      operationId: GetClientBalances
+      parameters:
+      - name: id
+        in: path
+        description: The id of the client
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientBalancesResponse'
+components:
+  schemas:
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    Contact:
+      type: object
+      properties:
+        companyName:
+          type:
+          - string
+          - 'null'
+          description: The company name if the client is a company.
+        firstName:
+          type:
+          - string
+          - 'null'
+          description: The first name of the client if an individual, or the billing contact in the company
+        lastName:
+          type:
+          - string
+          - 'null'
+          description: The last name of the client if an individual, or the billing contact in the company
+        middleName:
+          type:
+          - string
+          - 'null'
+          description: The middle name of the client if an individual, or the billing contact in the company
+        suffix:
+          type:
+          - string
+          - 'null'
+          description: The suffix of the client name (Jr., Sr., III, etc.)
+        email:
+          type:
+          - string
+          - 'null'
+          description: The email of the client or billing contact
+        emailCC:
+          type:
+          - string
+          - 'null'
+          description: The CC email address for the client or billing contact
+        phone:
+          type:
+          - string
+          - 'null'
+          description: The primary phone number of client or billing contact
+        cellPhone:
+          type:
+          - string
+          - 'null'
+          description: The cell phone number of client or billing contact
+        otherPhone:
+          type:
+          - string
+          - 'null'
+          description: Additional phone number of client or billing contact
+        fax:
+          type:
+          - string
+          - 'null'
+          description: The fax number of client or billing contact
+        street:
+          type:
+          - string
+          - 'null'
+          description: The street address of client or billing contact. Can have multiple lines.
+        city:
+          type:
+          - string
+          - 'null'
+          description: The city of client or billing contact
+        state:
+          type:
+          - string
+          - 'null'
+          description: The state or province of client or billing contact
+        zip:
+          type:
+          - string
+          - 'null'
+          description: The ZIP or postal code of client or billing contact
+        country:
+          type:
+          - string
+          - 'null'
+          description: The country of client or billing contact
+      additionalProperties: false
+    ClientBalancesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ClientBalances'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CreateClient:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+        contact:
+          $ref: '#/components/schemas/Contact'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the client
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Initial values for the client''s custom fields. Optional - any custom field not listed is left
+
+            unset. Ids come from GET /v2/custom-fields?entity=client.'
+      additionalProperties: false
+      description: When creating a client you must provide either a company name, or first and last name, or both
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    UpdateClient:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the client, if not provided, the current name will not be changed
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client, if not provided, the current reference will not be changed
+        contact:
+          $ref: '#/components/schemas/Contact'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the client, if not provided, the current notes will not be changed
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
+
+            leave every custom field alone, and set an entry''s value to null to clear that one field.'
+      additionalProperties: false
+      description: Update an existing client
+    ClientBalances:
+      required:
+      - balance
+      - overdue
+      - overdue30
+      - overdue60
+      - overdue90
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance- includes all open final invoices
+          format: double
+        overdue:
+          type: number
+          description: Total balances of all overdue invoices
+          format: double
+        overdue30:
+          type: number
+          description: Total balances of all invoices that are overdue more than 30 days
+          format: double
+        overdue60:
+          type: number
+          description: Total balances of all invoices that are overdue more than 60 days
+          format: double
+        overdue90:
+          type: number
+          description: Total balances of all invoices that are overdue more than 90 days
+          format: double
+      additionalProperties: false
+      description: Financial summary of the client
+    CustomFieldValue:
+      required:
+      - id
+      - name
+      - value
+      - valueType
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field, from GET /v2/custom-fields.
+        name:
+          minLength: 1
+          type: string
+          description: The current name (label) of the field
+        valueType:
+          $ref: '#/components/schemas/CustomFieldValueType'
+        value:
+          oneOf:
+          - type: string
+            description: When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID.
+          - type: number
+            description: When `valueType` is `number`
+          - type: boolean
+            description: When `valueType` is `boolean`
+          description: 'The value of the field, typed according to valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date for "date", and the selected option''s
+
+            label for "enum".'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the selected option, for "enum" fields. Use this rather than the label when writing
+
+            the value back, since labels can be renamed. Omitted for other value types.'
+          format: uuid
+      additionalProperties: false
+      description: A custom field and its value on a client, matter or user
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    ClientDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ClientDetail'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CustomFieldValueUpdate:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field to set. Ids come from GET /v2/custom-fields.
+        value:
+          oneOf:
+          - type: string
+            description: For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too
+          - type: number
+            description: For a `number` field
+          - type: boolean
+            description: For a `boolean` field
+          description: 'The value to set, typed according to the field''s valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date ("yyyy-MM-dd") for "date", and an option
+
+            label for "enum" (prefer "optionId" for those, since labels can be renamed). Numbers, booleans
+
+            and dates may also be sent as strings. Set to null to clear the field.'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the option to select, for "enum" fields only. Option ids come from
+
+            GET /v2/custom-fields. Takes precedence over "value".'
+          format: uuid
+      additionalProperties: false
+      description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
+
+        any custom field not in the array keeps its current value.'
+    ClientList:
+      required:
+      - clientId
+      - name
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: The unique id of the client
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+        contact:
+          $ref: '#/components/schemas/Contact'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+          description: The custom fields set on this record. Only returned when "customFields" is requested via the select parameter.
+      additionalProperties: false
+      description: Represents a client of the firm
+    ClientDetail:
+      required:
+      - clientId
+      - contact
+      - name
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: The unique id of the client
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+        contact:
+          $ref: '#/components/schemas/Contact'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Internal notes about the client
+        meta:
+          $ref: '#/components/schemas/Metadata'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+          description: The custom fields set on this record
+      additionalProperties: false
+      description: A client of the firm with contact information and other detail
+    ClientListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ClientList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

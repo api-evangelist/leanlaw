@@ -1,0 +1,560 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Expense API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: Expense
+paths:
+  /v2/expenses:
+    get:
+      tags:
+      - Expense
+      summary: Get a list of expenses
+      operationId: ListExpenses
+      parameters:
+      - name: startDate
+        in: query
+        description: Only return expenses that are dated after or including this date
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: Only return expenses that are dated before or including this date
+        schema:
+          type: string
+          format: date
+      - name: userId
+        in: query
+        description: Only return expenses that are associated with this user
+        schema:
+          type: string
+          format: uuid
+      - name: matterId
+        in: query
+        description: Only return expenses that are associated with this matter
+        schema:
+          type: string
+          format: uuid
+      - name: clientId
+        in: query
+        description: Only return expenses that are associated with this client
+        schema:
+          type: string
+          format: uuid
+      - name: billed
+        in: query
+        description: 'If true, only returns expenses that are on an invoice, regardless of the invoice state.
+
+          If false, only returns expenses that are not on an invoice.'
+        schema:
+          type: boolean
+      - name: invoiceId
+        in: query
+        description: Only return expenses billed on this invoice.
+        schema:
+          type: string
+          format: uuid
+      - name: select
+        in: query
+        description: 'Used to include additional detail in the response with a comma separated list of object identifiers.. Fields can be prefixed with a minus sign to exclude them.
+
+          Supported fields: client, matter, user, meta, invoice'
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Sorting parameters for expenses.
+
+          Supported sort fields: date, amount, description
+
+          Example: "-date,amount" sorts by date descending, then amount ascending'
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Maximum number of items to return (default: 1000, max: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: 'Number of items to offset (default: 0)'
+        schema:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          format: int32
+      - name: modifiedSince
+        in: query
+        description: Only return results that have the ModifiedDate property after this date and time (optional)
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseListListResponse'
+    post:
+      tags:
+      - Expense
+      summary: Create a new expense
+      operationId: CreateExpense
+      requestBody:
+        description: The expense to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpense'
+      responses:
+        '200':
+          description: OK
+  /v2/expenses/{id}:
+    get:
+      tags:
+      - Expense
+      summary: Get an expense by id
+      operationId: GetExpense
+      parameters:
+      - name: id
+        in: path
+        description: The id of the expense
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseDetailResponse'
+    put:
+      tags:
+      - Expense
+      summary: Update an expense
+      description: "Updating an expense is only possible if it has not been billed (added to an invoice). \nThe update is \"sparse\", where only the fields that are provided in the request will be updated."
+      operationId: UpdateExpense
+      parameters:
+      - name: id
+        in: path
+        description: The id of the expense to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Information about the update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExpense'
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+      - Expense
+      summary: Delete an expense
+      description: 'Deleting an expense will remove it from the system permanently. Expenses that have been
+
+        billed (added to an invoice) cannot be deleted.'
+      operationId: DeleteExpense
+      parameters:
+      - name: id
+        in: path
+        description: The id of the expense to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    ClientReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the Client
+      additionalProperties: false
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    ExpenseDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExpenseDetail'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    ExpenseListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ExpenseList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    UpdateExpense:
+      type: object
+      properties:
+        matterId:
+          type:
+          - string
+          - 'null'
+          description: Update the matter of the expense.
+          format: uuid
+        userId:
+          type:
+          - string
+          - 'null'
+          description: Update the user of the expense.
+          format: uuid
+        date:
+          type:
+          - string
+          - 'null'
+          description: Update the date of the expense
+          format: date
+        description:
+          type:
+          - string
+          - 'null'
+          description: Update the description of the expense, provide null to keep the current description
+        amount:
+          type:
+          - number
+          - 'null'
+          description: Update the amount of the expense, provide null to keep the current amount
+          format: double
+        expenseCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES expense code
+      additionalProperties: false
+      description: Data for updating an expense
+    ExpenseDetail:
+      required:
+      - amount
+      - billed
+      - client
+      - clientId
+      - date
+      - description
+      - matter
+      - matterId
+      type: object
+      properties:
+        expenseId:
+          type: string
+          format: uuid
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The id of the user who is assigned to the expense (If null, the expense is associated with the firm).
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserReference'
+        matterId:
+          type: string
+          description: The id of the matter that the expense is associated with.
+          format: uuid
+        matter:
+          $ref: '#/components/schemas/MatterReference'
+        clientId:
+          type: string
+          description: The client that the expense is associated with.
+          format: uuid
+        client:
+          $ref: '#/components/schemas/ClientReference'
+        date:
+          type: string
+          description: The date of the expense.
+          format: date
+        description:
+          minLength: 1
+          type: string
+          description: The description of the expense.
+        billed:
+          type: boolean
+          description: True if the expense is on an invoice, regardless of the invoice state.
+        invoiceId:
+          type:
+          - string
+          - 'null'
+          description: The id of the invoice this expense is associated with, if billed.
+          format: uuid
+        invoice:
+          $ref: '#/components/schemas/InvoiceReference'
+        amount:
+          type: number
+          description: The amount of the expense.
+          format: double
+        expenseCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES expense code
+        checkNumber:
+          type:
+          - string
+          - 'null'
+          description: The check number from QuickBooks, if the expense was paid via check. Read-only, QBO-sourced.
+        meta:
+          $ref: '#/components/schemas/Metadata'
+      additionalProperties: false
+    InvoiceReference:
+      required:
+      - invoiceAmount
+      - invoiceBalance
+      - invoiceDate
+      - invoiceId
+      - invoiceNumber
+      - invoiceState
+      type: object
+      properties:
+        invoiceId:
+          type: string
+          description: The id of the invoice.
+          format: uuid
+        invoiceNumber:
+          minLength: 1
+          type: string
+          description: The invoice number.
+        invoiceDate:
+          type: string
+          description: The date of the invoice.
+          format: date
+        invoiceState:
+          $ref: '#/components/schemas/InvoiceState'
+        invoiceAmount:
+          type: number
+          description: The total amount of the invoice.
+          format: double
+        invoiceBalance:
+          type: number
+          description: The outstanding balance of the invoice.
+          format: double
+      additionalProperties: false
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
+    ExpenseList:
+      required:
+      - amount
+      - billed
+      - clientId
+      - date
+      - description
+      - expenseId
+      - matterId
+      type: object
+      properties:
+        expenseId:
+          type: string
+          format: uuid
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The user who created the expense. If empty/null, the user is unassigned.
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserReference'
+        matterId:
+          type: string
+          description: The matter that the expense is associated with.
+          format: uuid
+        matter:
+          $ref: '#/components/schemas/MatterReference'
+        clientId:
+          type: string
+          description: The client that the expense is associated with.
+          format: uuid
+        client:
+          $ref: '#/components/schemas/ClientReference'
+        date:
+          type: string
+          description: The date of the expense.
+          format: date
+        description:
+          minLength: 1
+          type: string
+          description: The description of the expense.
+        amount:
+          type: number
+          description: The amount of the expense.
+          format: double
+        billed:
+          type: boolean
+          description: True if the expense is on an invoice, regardless of the invoice state.
+        checkNumber:
+          type:
+          - string
+          - 'null'
+          description: The check number from QuickBooks, if the expense was paid via check. Read-only, QBO-sourced.
+        invoiceId:
+          type:
+          - string
+          - 'null'
+          description: The id of the invoice this expense is associated with, if billed.
+          format: uuid
+        invoice:
+          $ref: '#/components/schemas/InvoiceReference'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+      additionalProperties: false
+    CreateExpense:
+      required:
+      - amount
+      - date
+      - description
+      - matterId
+      type: object
+      properties:
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The user associated with the expense. If ommitted, the expense with associated with the firm
+          format: uuid
+        matterId:
+          type: string
+          description: The matter is required.
+          format: uuid
+        date:
+          type: string
+          description: The date of the expense. Required
+          format: date
+        description:
+          minLength: 1
+          type: string
+          description: The description of the expense. Required
+        amount:
+          type: number
+          description: The amount of the expense (Required)
+          format: double
+        expenseCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES expense code
+      additionalProperties: false
+    UserReference:
+      required:
+      - firstName
+      - lastName
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the user
+        initials:
+          type:
+          - string
+          - 'null'
+          description: The initials of the user
+        firstName:
+          minLength: 1
+          type: string
+          description: The first name of the user
+        lastName:
+          minLength: 1
+          type: string
+          description: The last name of the user
+      additionalProperties: false
+      description: A user in the firm
+    MatterReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter
+      additionalProperties: false
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

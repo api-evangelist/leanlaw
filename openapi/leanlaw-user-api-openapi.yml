@@ -1,0 +1,274 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw User API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: User
+paths:
+  /v2/users:
+    get:
+      tags:
+      - User
+      summary: Get list of users
+      operationId: ListUsers
+      parameters:
+      - name: email
+        in: query
+        description: Find a user by their email
+        schema:
+          type: string
+      - name: role
+        in: query
+        description: The role to filter users by.
+        schema:
+          $ref: '#/components/schemas/Role'
+      - name: query
+        in: query
+        description: Search query (searches user by first name, last name, initials, or email)
+        schema:
+          type: string
+      - name: queryFullMatch
+        in: query
+        description: 'If true, the query passed in must match the full field. For example, if passing in "JO" it will match
+
+          someone with those initials but not the first name "John". If false, the query will return record that
+
+          partially match the field. Default: false.'
+        schema:
+          type: boolean
+      - name: select
+        in: query
+        description: 'Used to include additional detail in the response with a comma-separated list of object identifiers. Fields can be prefixed with a minus sign to exclude them.
+
+          Supported fields: customFields'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListIEnumerableResponse'
+  /v2/users/{id}:
+    put:
+      tags:
+      - User
+      summary: Update a user's custom fields
+      description: 'Custom fields are the only part of a user that can be changed through the API. Everything else
+
+        about a user - name, email, role, rates - is managed in LeanLaw itself.'
+      operationId: UpdateUser
+      parameters:
+      - name: id
+        in: path
+        description: The id of the user to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: The custom field values to set
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+components:
+  schemas:
+    Role:
+      enum:
+      - principal
+      - attorney
+      - paralegal
+      - timekeeper
+      - operator
+      - accountant
+      type: string
+      description: The role of the user
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    CustomFieldValue:
+      required:
+      - id
+      - name
+      - value
+      - valueType
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field, from GET /v2/custom-fields.
+        name:
+          minLength: 1
+          type: string
+          description: The current name (label) of the field
+        valueType:
+          $ref: '#/components/schemas/CustomFieldValueType'
+        value:
+          oneOf:
+          - type: string
+            description: When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID.
+          - type: number
+            description: When `valueType` is `number`
+          - type: boolean
+            description: When `valueType` is `boolean`
+          description: 'The value of the field, typed according to valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date for "date", and the selected option''s
+
+            label for "enum".'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the selected option, for "enum" fields. Use this rather than the label when writing
+
+            the value back, since labels can be renamed. Omitted for other value types.'
+          format: uuid
+      additionalProperties: false
+      description: A custom field and its value on a client, matter or user
+    UpdateUser:
+      type: object
+      properties:
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
+
+            leave every custom field alone, and set an entry''s value to null to clear that one field.
+
+            Ids come from GET /v2/custom-fields?entity=user.'
+      additionalProperties: false
+      description: 'Update an existing user. Only custom fields can be set through the API - the rest of a user''s
+
+        record (name, email, role, rates) is managed in LeanLaw itself.'
+    UserListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CustomFieldValueUpdate:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field to set. Ids come from GET /v2/custom-fields.
+        value:
+          oneOf:
+          - type: string
+            description: For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too
+          - type: number
+            description: For a `number` field
+          - type: boolean
+            description: For a `boolean` field
+          description: 'The value to set, typed according to the field''s valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date ("yyyy-MM-dd") for "date", and an option
+
+            label for "enum" (prefer "optionId" for those, since labels can be renamed). Numbers, booleans
+
+            and dates may also be sent as strings. Set to null to clear the field.'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the option to select, for "enum" fields only. Option ids come from
+
+            GET /v2/custom-fields. Takes precedence over "value".'
+          format: uuid
+      additionalProperties: false
+      description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
+
+        any custom field not in the array keeps its current value.'
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    UserList:
+      required:
+      - email
+      - firstName
+      - lastName
+      - name
+      - role
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+          description: The unique identifier of the user
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: The name of the user
+        firstName:
+          minLength: 1
+          type: string
+          description: The first name of the user
+        lastName:
+          minLength: 1
+          type: string
+          description: The last name of the user
+        initials:
+          type:
+          - string
+          - 'null'
+          description: The initials of the user
+        role:
+          $ref: '#/components/schemas/Role'
+        email:
+          minLength: 1
+          type: string
+          description: The email address of the user
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+          description: 'The custom fields set on this record. In a list, only returned when "customFields" is requested
+
+            via the select parameter; PUT /v2/users/{id} always returns them.'
+      additionalProperties: false
+      description: A user in the firm
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

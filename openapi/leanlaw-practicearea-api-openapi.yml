@@ -1,0 +1,160 @@
+openapi: 3.2.0
+info:
+  title: LeanLaw Practice Area API
+  description: This API enables access to a LeanLaw account. For documentation, see https://platform.leanlaw.io
+  version: v1
+servers:
+- url: https://api.leanlaw.io
+security:
+- BearerAuth: []
+tags:
+- name: PracticeArea
+paths:
+  /v2/practice-areas:
+    get:
+      tags:
+      - PracticeArea
+      summary: Get all practice areas
+      operationId: ListPracticeAreas
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeAreaListIEnumerableResponse'
+    post:
+      tags:
+      - PracticeArea
+      summary: Create a new practice area
+      operationId: CreatePracticeArea
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePracticeArea'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeAreaListResponse'
+  /v2/practice-areas/{id}:
+    put:
+      tags:
+      - PracticeArea
+      summary: Update a practice area
+      operationId: UpdatePracticeArea
+      parameters:
+      - name: id
+        in: path
+        description: The id of the practice area to update
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Information about the update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePracticeArea'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeAreaListResponse'
+    delete:
+      tags:
+      - PracticeArea
+      summary: Delete a practice area
+      description: Practice areas that are assigned to matters cannot be deleted.
+      operationId: DeletePracticeArea
+      parameters:
+      - name: id
+        in: path
+        description: The id of the practice area to delete
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    UpdatePracticeArea:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: The label/name of the practice area; if not provided, it will not be changed
+        default:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether this is the default practice area; if not provided, it will not be changed
+      additionalProperties: false
+      description: Represents an update request for a practice area
+    PracticeAreaList:
+      required:
+      - default
+      - label
+      - practiceAreaId
+      type: object
+      properties:
+        practiceAreaId:
+          type: string
+          description: The unique identifier of the practice area
+          format: uuid
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the practice area
+        default:
+          type: boolean
+          description: Indicates whether this is the default practice area
+      additionalProperties: false
+      description: Represents a practice area
+    CreatePracticeArea:
+      required:
+      - label
+      type: object
+      properties:
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the practice area
+        default:
+          type: boolean
+          description: Indicates whether this is the default practice area
+      additionalProperties: false
+      description: Represents a create request for a practice area
+    PracticeAreaListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PracticeAreaList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    PracticeAreaListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PracticeAreaList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
