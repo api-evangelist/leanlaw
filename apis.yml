@@ -91,7 +91,11 @@ apis:
   properties:
   - type: X-MCPServerCandidate
     url: mcp/leanlaw-mcp.yml
-    note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
+    note: >-
+      Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate
+      — a tool list derived from the published API contracts, not an existing server. The scorer already
+      read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type
+      surfaces with a server that does not exist.
   - type: ToolCrosswalk
     url: mcp/leanlaw-tool-crosswalk.yml
   - type: OAuthScopes
@@ -136,34 +140,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/leanlaw-codes-api-openapi.yml
-  - type: Documentation
-    url: https://platform.leanlaw.io/start
-  - type: APIReference
-    url: https://platform.leanlaw.io/api
-  - type: GettingStarted
-    url: https://platform.leanlaw.io/start
-  - type: Authentication
-    url: authentication/leanlaw-authentication.yml
-  - type: ErrorCatalog
-    url: errors/leanlaw-problem-types.yml
-  - type: DataModel
-    url: data-model/leanlaw-data-model.yml
-  - type: Conventions
-    url: conventions/leanlaw-conventions.yml
-  - type: RateLimits
-    url: rate-limits/leanlaw-rate-limits.yml
-- aid: leanlaw:leanlaw-customfield-api
-  name: LeanLaw Custom Field API
-  description: The CustomField API from LeanLaw — 1 operation(s) for customfield.
-  humanURL: https://platform.leanlaw.io/start
-  baseURL: https://api.leanlaw.io
-  tags:
-  - Custom Field
-  tags_raw:
-  - CustomField
-  properties:
-  - type: OpenAPI
-    url: openapi/leanlaw-customfield-api-openapi.yml
   - type: Documentation
     url: https://platform.leanlaw.io/start
   - type: APIReference
@@ -310,18 +286,16 @@ apis:
     url: conventions/leanlaw-conventions.yml
   - type: RateLimits
     url: rate-limits/leanlaw-rate-limits.yml
-- aid: leanlaw:leanlaw-timeentry-api
-  name: LeanLaw Time Entry API
-  description: The TimeEntry API from LeanLaw — 2 operation(s) for timeentry.
+- aid: leanlaw:leanlaw-user-api
+  name: LeanLaw User API
+  description: The User API from LeanLaw — 2 operation(s) for user.
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
-  - Time entry
-  tags_raw:
-  - TimeEntry
+  - User
   properties:
   - type: OpenAPI
-    url: openapi/leanlaw-timeentry-api-openapi.yml
+    url: openapi/leanlaw-user-api-openapi.yml
   - type: Documentation
     url: https://platform.leanlaw.io/start
   - type: APIReference
@@ -338,16 +312,42 @@ apis:
     url: conventions/leanlaw-conventions.yml
   - type: RateLimits
     url: rate-limits/leanlaw-rate-limits.yml
-- aid: leanlaw:leanlaw-user-api
-  name: LeanLaw User API
-  description: The User API from LeanLaw — 2 operation(s) for user.
-  humanURL: https://platform.leanlaw.io/start
-  baseURL: https://api.leanlaw.io
+- aid: leanlaw:leanlaw-custom-field-api
+  name: LeanLaw Custom Field API
+  description: The Custom Field API from LeanLaw — 1 operation(s) for custom field.
+  humanURL: https://platform.leanlaw.io/agents
+  baseURL: https://api.leanlaw.io/mcp
   tags:
-  - User
+  - Custom Field
   properties:
   - type: OpenAPI
-    url: openapi/leanlaw-user-api-openapi.yml
+    url: openapi/leanlaw-custom-field-api-openapi.yml
+  - type: Documentation
+    url: https://platform.leanlaw.io/start
+  - type: APIReference
+    url: https://platform.leanlaw.io/api
+  - type: GettingStarted
+    url: https://platform.leanlaw.io/start
+  - type: Authentication
+    url: authentication/leanlaw-authentication.yml
+  - type: ErrorCatalog
+    url: errors/leanlaw-problem-types.yml
+  - type: DataModel
+    url: data-model/leanlaw-data-model.yml
+  - type: Conventions
+    url: conventions/leanlaw-conventions.yml
+  - type: RateLimits
+    url: rate-limits/leanlaw-rate-limits.yml
+- aid: leanlaw:leanlaw-time-entry-api
+  name: LeanLaw Time entry API
+  description: The Time entry API from LeanLaw — 2 operation(s) for time entry.
+  humanURL: https://platform.leanlaw.io/agents
+  baseURL: https://api.leanlaw.io/mcp
+  tags:
+  - Time entry
+  properties:
+  - type: OpenAPI
+    url: openapi/leanlaw-time-entry-api-openapi.yml
   - type: Documentation
     url: https://platform.leanlaw.io/start
   - type: APIReference
