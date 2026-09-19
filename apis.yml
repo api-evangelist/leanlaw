@@ -162,6 +162,8 @@ apis:
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
+  - Expenses
+  tags_raw:
   - Expense
   properties:
   - type: OpenAPI
@@ -214,6 +216,8 @@ apis:
   humanURL: https://platform.leanlaw.io/start
   baseURL: https://api.leanlaw.io
   tags:
+  - Invoices
+  tags_raw:
   - Invoice
   properties:
   - type: OpenAPI
