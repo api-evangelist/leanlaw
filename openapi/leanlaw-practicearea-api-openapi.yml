@@ -86,21 +86,6 @@ paths:
           description: OK
 components:
   schemas:
-    UpdatePracticeArea:
-      type: object
-      properties:
-        label:
-          type:
-          - string
-          - 'null'
-          description: The label/name of the practice area; if not provided, it will not be changed
-        default:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether this is the default practice area; if not provided, it will not be changed
-      additionalProperties: false
-      description: Represents an update request for a practice area
     PracticeAreaList:
       required:
       - default
@@ -121,6 +106,40 @@ components:
           description: Indicates whether this is the default practice area
       additionalProperties: false
       description: Represents a practice area
+    UpdatePracticeArea:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: The label/name of the practice area; if not provided, it will not be changed
+        default:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether this is the default practice area; if not provided, it will not be changed
+      additionalProperties: false
+      description: Represents an update request for a practice area
+    PracticeAreaListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PracticeAreaList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    PracticeAreaListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PracticeAreaList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     CreatePracticeArea:
       required:
       - label
@@ -135,25 +154,6 @@ components:
           description: Indicates whether this is the default practice area
       additionalProperties: false
       description: Represents a create request for a practice area
-    PracticeAreaListIEnumerableResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PracticeAreaList'
-          description: The data returned by the API
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    PracticeAreaListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/PracticeAreaList'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
   securitySchemes:
     BearerAuth:
       type: http

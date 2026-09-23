@@ -1,12 +1,17 @@
-generated: '2026-08-25'
+generated: '2026-09-19'
 method: probed
 source: live GET of /.well-known/* on every LeanLaw host
-note: >-
-  api.myleanlaw.co serves a full OpenID Connect / OAuth 2.0 authorization-server discovery document
+note: 'api.myleanlaw.co serves a full OpenID Connect / OAuth 2.0 authorization-server discovery document
   (issuer https://auth.myleanlaw.co/), and api.leanlaw.io serves an RFC 9728 OAuth protected-resource
-  metadata document describing the MCP server. www.leanlaw.co, next.myleanlaw.co and
-  support.leanlaw.co return an HTML 404 page for every probed path. No security.txt and no
-  api-catalog is served anywhere on the estate.
+  metadata document describing the MCP server. www.leanlaw.co, next.myleanlaw.co and support.leanlaw.co
+  return an HTML 404 page for every probed path. No security.txt and no api-catalog is served anywhere
+  on the estate.
+
+
+  MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s primary
+  hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed and
+  were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'
 hosts:
 - host: api.myleanlaw.co
   documents:
@@ -49,6 +54,11 @@ hosts:
     status: 404
   - path: /.well-known/jwks.json
     status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: leanlaw-api-oauth-protected-resource.json
+    bytes: 406
+  path_echo_control: passed
 - host: auth.myleanlaw.co
   documents:
   - path: /.well-known/openid-configuration
@@ -92,3 +102,22 @@ hosts:
     status: 404
   - path: /.well-known/agent.json
     status: 404
+- host: https://auth.leanlaw.io
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: leanlaw-auth-oauth-authorization-server.json
+    bytes: 1848
+  path_echo_control: passed
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://api.leanlaw.io
+    path: /.well-known/oauth-protected-resource
+    file: leanlaw-api-oauth-protected-resource.json
+  - host: https://auth.leanlaw.io
+    path: /.well-known/oauth-authorization-server
+    file: leanlaw-auth-oauth-authorization-server.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host

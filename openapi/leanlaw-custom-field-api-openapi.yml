@@ -8,14 +8,16 @@ servers:
 security:
 - BearerAuth: []
 tags:
-- name: CustomField
+- name: Custom Field
 paths:
   /v2/custom-fields:
     get:
       tags:
-      - CustomField
+      - Custom Field
       summary: Get custom field definitions
-      description: "Lists the firm's custom field definitions across all entity types. \nField definitions are managed in the LeanLaw application; this endpoint is read-only."
+      description: 'Lists the firm''s custom field definitions across all entity types.
+
+        Field definitions are managed in the LeanLaw application; this endpoint is read-only.'
       operationId: ListCustomFields
       parameters:
       - name: entity
@@ -32,31 +34,6 @@ paths:
                 $ref: '#/components/schemas/CustomFieldListIEnumerableResponse'
 components:
   schemas:
-    CustomFieldOption:
-      required:
-      - label
-      - optionId
-      type: object
-      properties:
-        optionId:
-          type: string
-          description: The id of the option. This is the value to use when setting the field on a record.
-          format: uuid
-        label:
-          minLength: 1
-          type: string
-          description: The label of the option
-      additionalProperties: false
-      description: An option available on an "enum" custom field
-    CustomFieldValueType:
-      enum:
-      - text
-      - boolean
-      - number
-      - date
-      - enum
-      type: string
-      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
     CustomFieldList:
       required:
       - entity
@@ -86,6 +63,22 @@ components:
           description: The options available for "enum" fields, in display order. Omitted for other value types.
       additionalProperties: false
       description: A custom field definition
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    CustomFieldEntityType:
+      enum:
+      - client
+      - matter
+      - user
+      type: string
+      description: The entity type a custom field belongs to
     CustomFieldListIEnumerableResponse:
       type: object
       properties:
@@ -98,13 +91,22 @@ components:
           description: The data returned by the API
       additionalProperties: false
       description: Standardized API response wrapper for single item responses
-    CustomFieldEntityType:
-      enum:
-      - client
-      - matter
-      - user
-      type: string
-      description: The entity type a custom field belongs to
+    CustomFieldOption:
+      required:
+      - label
+      - optionId
+      type: object
+      properties:
+        optionId:
+          type: string
+          description: The id of the option. This is the value to use when setting the field on a record.
+          format: uuid
+        label:
+          minLength: 1
+          type: string
+          description: The label of the option
+      additionalProperties: false
+      description: An option available on an "enum" custom field
   securitySchemes:
     BearerAuth:
       type: http

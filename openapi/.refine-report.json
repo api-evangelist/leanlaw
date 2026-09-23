@@ -1,0 +1,41 @@
+{
+  "provider": "leanlaw",
+  "sources": [
+    "_original/leanlaw-api-openapi.json"
+  ],
+  "outputs": [
+    "leanlaw-client-api-openapi.yml",
+    "leanlaw-codes-api-openapi.yml",
+    "leanlaw-customfield-api-openapi.yml",
+    "leanlaw-expense-api-openapi.yml",
+    "leanlaw-fixedfee-api-openapi.yml",
+    "leanlaw-invoice-api-openapi.yml",
+    "leanlaw-matter-api-openapi.yml",
+    "leanlaw-practicearea-api-openapi.yml",
+    "leanlaw-timeentry-api-openapi.yml",
+    "leanlaw-user-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 2 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "leanlaw-api-openapi.json: upgraded openapi 3.0.4 -> OpenAPI 3.2.0",
+    "superseded outputs removed: leanlaw-custom-field-api-openapi.yml, leanlaw-time-entry-api-openapi.yml",
+    "apis.yml register: written (+2 apis, 11 total)"
+  ],
+  "skipped": [
+    "leanlaw-client-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-codes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-custom-field-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-expense-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-fixedfee-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-invoice-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-matter-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-practicearea-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-time-entry-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "leanlaw-user-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
