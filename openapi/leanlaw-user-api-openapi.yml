@@ -87,44 +87,6 @@ paths:
                 $ref: '#/components/schemas/UserListResponse'
 components:
   schemas:
-    Role:
-      enum:
-      - principal
-      - attorney
-      - paralegal
-      - timekeeper
-      - operator
-      - accountant
-      type: string
-      description: The role of the user
-    UserListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserList'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    CustomFieldValueType:
-      enum:
-      - text
-      - boolean
-      - number
-      - date
-      - enum
-      type: string
-      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
-    UserListIEnumerableResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/UserList'
-          description: The data returned by the API
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
     UpdateUser:
       type: object
       properties:
@@ -143,6 +105,27 @@ components:
       description: 'Update an existing user. Only custom fields can be set through the API - the rest of a user''s
 
         record (name, email, role, rates) is managed in LeanLaw itself.'
+    UserListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
     CustomFieldValueUpdate:
       required:
       - id
@@ -179,6 +162,13 @@ components:
       description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
 
         any custom field not in the array keeps its current value.'
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     UserList:
       required:
       - email
@@ -268,6 +258,16 @@ components:
           format: uuid
       additionalProperties: false
       description: A custom field and its value on a client, matter or user
+    Role:
+      enum:
+      - principal
+      - attorney
+      - paralegal
+      - timekeeper
+      - operator
+      - accountant
+      type: string
+      description: The role of the user
   securitySchemes:
     BearerAuth:
       type: http

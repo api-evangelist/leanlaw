@@ -178,6 +178,109 @@ paths:
                 $ref: '#/components/schemas/ClientBalancesResponse'
 components:
   schemas:
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    ClientListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ClientList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    ClientBalances:
+      required:
+      - balance
+      - overdue
+      - overdue30
+      - overdue60
+      - overdue90
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance- includes all open final invoices
+          format: double
+        overdue:
+          type: number
+          description: Total balances of all overdue invoices
+          format: double
+        overdue30:
+          type: number
+          description: Total balances of all invoices that are overdue more than 30 days
+          format: double
+        overdue60:
+          type: number
+          description: Total balances of all invoices that are overdue more than 60 days
+          format: double
+        overdue90:
+          type: number
+          description: Total balances of all invoices that are overdue more than 90 days
+          format: double
+      additionalProperties: false
+      description: Financial summary of the client
+    CreateClient:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the client
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client
+        contact:
+          $ref: '#/components/schemas/Contact'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the client
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Initial values for the client''s custom fields. Optional - any custom field not listed is left
+
+            unset. Ids come from GET /v2/custom-fields?entity=client.'
+      additionalProperties: false
+      description: When creating a client you must provide either a company name, or first and last name, or both
     ClientDetail:
       required:
       - clientId
@@ -216,15 +319,37 @@ components:
           description: The custom fields set on this record
       additionalProperties: false
       description: A client of the firm with contact information and other detail
-    CustomFieldValueType:
-      enum:
-      - text
-      - boolean
-      - number
-      - date
-      - enum
-      type: string
-      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    UpdateClient:
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the client, if not provided, the current name will not be changed
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the client, if not provided, the current reference will not be changed
+        contact:
+          $ref: '#/components/schemas/Contact'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes about the client, if not provided, the current notes will not be changed
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
+
+            leave every custom field alone, and set an entry''s value to null to clear that one field.'
+      additionalProperties: false
+      description: Update an existing client
     ClientList:
       required:
       - clientId
@@ -257,98 +382,15 @@ components:
           description: The custom fields set on this record. Only returned when "customFields" is requested via the select parameter.
       additionalProperties: false
       description: Represents a client of the firm
-    ClientListListResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ClientList'
-          description: The list of items returned by the API
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      description: Standardized API response wrapper for list responses with pagination Paginationdata
-    CreateClient:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the client
-        reference:
-          type:
-          - string
-          - 'null'
-          description: A reference number for the client
-        contact:
-          $ref: '#/components/schemas/Contact'
-        notes:
-          type:
-          - string
-          - 'null'
-          description: Notes about the client
-        customFields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomFieldValueUpdate'
-          description: 'Initial values for the client''s custom fields. Optional - any custom field not listed is left
-
-            unset. Ids come from GET /v2/custom-fields?entity=client.'
-      additionalProperties: false
-      description: When creating a client you must provide either a company name, or first and last name, or both
-    Metadata:
-      required:
-      - createdAt
-      - modifiedAt
-      type: object
-      properties:
-        createdAt:
-          type: string
-          description: The date the entity was created.
-          format: date-time
-        modifiedAt:
-          type: string
-          description: The date the entity was last modified.
-          format: date-time
-      additionalProperties: false
-    UpdateClient:
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-          description: The name of the client, if not provided, the current name will not be changed
-        reference:
-          type:
-          - string
-          - 'null'
-          description: A reference number for the client, if not provided, the current reference will not be changed
-        contact:
-          $ref: '#/components/schemas/Contact'
-        notes:
-          type:
-          - string
-          - 'null'
-          description: Notes about the client, if not provided, the current notes will not be changed
-        customFields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomFieldValueUpdate'
-          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
-
-            leave every custom field alone, and set an entry''s value to null to clear that one field.'
-      additionalProperties: false
-      description: Update an existing client
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
     CustomFieldValueUpdate:
       required:
       - id
@@ -385,111 +427,6 @@ components:
       description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
 
         any custom field not in the array keeps its current value.'
-    Pagination:
-      required:
-      - limit
-      - offset
-      - total
-      type: object
-      properties:
-        limit:
-          type: integer
-          description: Maximum number of items to return
-          format: int32
-        offset:
-          type: integer
-          description: Number of items to offset
-          format: int32
-        total:
-          type: integer
-          description: Total number of items available
-          format: int32
-        sort:
-          type:
-          - string
-          - 'null'
-          description: Current sort parameters applied to the results
-      additionalProperties: false
-      description: Pagination information
-    ClientBalances:
-      required:
-      - balance
-      - overdue
-      - overdue30
-      - overdue60
-      - overdue90
-      type: object
-      properties:
-        balance:
-          type: number
-          description: Current account balance- includes all open final invoices
-          format: double
-        overdue:
-          type: number
-          description: Total balances of all overdue invoices
-          format: double
-        overdue30:
-          type: number
-          description: Total balances of all invoices that are overdue more than 30 days
-          format: double
-        overdue60:
-          type: number
-          description: Total balances of all invoices that are overdue more than 60 days
-          format: double
-        overdue90:
-          type: number
-          description: Total balances of all invoices that are overdue more than 90 days
-          format: double
-      additionalProperties: false
-      description: Financial summary of the client
-    ClientBalancesResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ClientBalances'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    CustomFieldValue:
-      required:
-      - id
-      - name
-      - value
-      - valueType
-      type: object
-      properties:
-        id:
-          minLength: 1
-          type: string
-          description: The id of the custom field, from GET /v2/custom-fields.
-        name:
-          minLength: 1
-          type: string
-          description: The current name (label) of the field
-        valueType:
-          $ref: '#/components/schemas/CustomFieldValueType'
-        value:
-          oneOf:
-          - type: string
-            description: When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID.
-          - type: number
-            description: When `valueType` is `number`
-          - type: boolean
-            description: When `valueType` is `boolean`
-          description: 'The value of the field, typed according to valueType: a string for "text", a number for
-
-            "number", a boolean for "boolean", an ISO-8601 date for "date", and the selected option''s
-
-            label for "enum".'
-        optionId:
-          type:
-          - string
-          - 'null'
-          description: 'The id of the selected option, for "enum" fields. Use this rather than the label when writing
-
-            the value back, since labels can be renamed. Omitted for other value types.'
-          format: uuid
-      additionalProperties: false
-      description: A custom field and its value on a client, matter or user
     Contact:
       type: object
       properties:
@@ -574,6 +511,28 @@ components:
           - 'null'
           description: The country of client or billing contact
       additionalProperties: false
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    ClientBalancesResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ClientBalances'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     ClientDetailResponse:
       type: object
       properties:
@@ -581,6 +540,47 @@ components:
           $ref: '#/components/schemas/ClientDetail'
       additionalProperties: false
       description: Standardized API response wrapper for single item responses
+    CustomFieldValue:
+      required:
+      - id
+      - name
+      - value
+      - valueType
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field, from GET /v2/custom-fields.
+        name:
+          minLength: 1
+          type: string
+          description: The current name (label) of the field
+        valueType:
+          $ref: '#/components/schemas/CustomFieldValueType'
+        value:
+          oneOf:
+          - type: string
+            description: When 'valueType' is 'text', 'enum' or 'date'. For 'enum' value types, the 'optionId' property contains the selected option ID.
+          - type: number
+            description: When `valueType` is `number`
+          - type: boolean
+            description: When `valueType` is `boolean`
+          description: 'The value of the field, typed according to valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date for "date", and the selected option''s
+
+            label for "enum".'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the selected option, for "enum" fields. Use this rather than the label when writing
+
+            the value back, since labels can be renamed. Omitted for other value types.'
+          format: uuid
+      additionalProperties: false
+      description: A custom field and its value on a client, matter or user
   securitySchemes:
     BearerAuth:
       type: http
