@@ -186,73 +186,6 @@ paths:
           description: OK
 components:
   schemas:
-    Pagination:
-      required:
-      - limit
-      - offset
-      - total
-      type: object
-      properties:
-        limit:
-          type: integer
-          description: Maximum number of items to return
-          format: int32
-        offset:
-          type: integer
-          description: Number of items to offset
-          format: int32
-        total:
-          type: integer
-          description: Total number of items available
-          format: int32
-        sort:
-          type:
-          - string
-          - 'null'
-          description: Current sort parameters applied to the results
-      additionalProperties: false
-      description: Pagination information
-    CreateFixedFee:
-      required:
-      - amount
-      - date
-      - description
-      - matterId
-      type: object
-      properties:
-        userId:
-          type:
-          - string
-          - 'null'
-          description: The user associated with the fixed fee. If ommitted, the fixed fee with associated with the firm
-          format: uuid
-        matterId:
-          type: string
-          description: The matter is required.
-          format: uuid
-        date:
-          type: string
-          description: The date of the fixed fee. Required
-          format: date
-        description:
-          minLength: 1
-          type: string
-          description: The description of the fixed fee. Required
-        amount:
-          type: number
-          description: The amount of the fixed fee (Required)
-          format: double
-        activityCode:
-          type:
-          - string
-          - 'null'
-          description: LEDES activity code
-        taskCode:
-          type:
-          - string
-          - 'null'
-          description: LEDES task code
-      additionalProperties: false
     UserReference:
       required:
       - firstName
@@ -279,28 +212,32 @@ components:
           description: The last name of the user
       additionalProperties: false
       description: A user in the firm
-    ClientReference:
+    Pagination:
       required:
-      - name
+      - limit
+      - offset
+      - total
       type: object
       properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the Client - either company name or individual name
-        reference:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
           type:
           - string
           - 'null'
-          description: A reference number for the Client
+          description: Current sort parameters applied to the results
       additionalProperties: false
-    FixedFeeDetailResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FixedFeeDetail'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
+      description: Pagination information
     FixedFeeList:
       required:
       - amount
@@ -362,61 +299,13 @@ components:
         meta:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    FixedFeeListListResponse:
+    FixedFeeDetailResponse:
       type: object
       properties:
         data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FixedFeeList'
-          description: The list of items returned by the API
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/schemas/FixedFeeDetail'
       additionalProperties: false
-      description: Standardized API response wrapper for list responses with pagination Paginationdata
-    InvoiceReference:
-      required:
-      - invoiceAmount
-      - invoiceBalance
-      - invoiceDate
-      - invoiceId
-      - invoiceNumber
-      - invoiceState
-      type: object
-      properties:
-        invoiceId:
-          type: string
-          description: The id of the invoice.
-          format: uuid
-        invoiceNumber:
-          minLength: 1
-          type: string
-          description: The invoice number.
-        invoiceDate:
-          type: string
-          description: The date of the invoice.
-          format: date
-        invoiceState:
-          $ref: '#/components/schemas/InvoiceState'
-        invoiceAmount:
-          type: number
-          description: The total amount of the invoice.
-          format: double
-        invoiceBalance:
-          type: number
-          description: The outstanding balance of the invoice.
-          format: double
-      additionalProperties: false
-    InvoiceState:
-      enum:
-      - draft
-      - review
-      - approved
-      - final
-      type: string
-      description: The state of an invoice
+      description: Standardized API response wrapper for single item responses
     Metadata:
       required:
       - createdAt
@@ -431,6 +320,21 @@ components:
           type: string
           description: The date the entity was last modified.
           format: date-time
+      additionalProperties: false
+    MatterReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the matter
       additionalProperties: false
     UpdateFixedFee:
       type: object
@@ -475,6 +379,47 @@ components:
           - 'null'
           description: LEDES task code
       additionalProperties: false
+    InvoiceReference:
+      required:
+      - invoiceAmount
+      - invoiceBalance
+      - invoiceDate
+      - invoiceId
+      - invoiceNumber
+      - invoiceState
+      type: object
+      properties:
+        invoiceId:
+          type: string
+          description: The id of the invoice.
+          format: uuid
+        invoiceNumber:
+          minLength: 1
+          type: string
+          description: The invoice number.
+        invoiceDate:
+          type: string
+          description: The date of the invoice.
+          format: date
+        invoiceState:
+          $ref: '#/components/schemas/InvoiceState'
+        invoiceAmount:
+          type: number
+          description: The total amount of the invoice.
+          format: double
+        invoiceBalance:
+          type: number
+          description: The outstanding balance of the invoice.
+          format: double
+      additionalProperties: false
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
     FixedFeeDetail:
       required:
       - amount
@@ -547,7 +492,62 @@ components:
         meta:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    MatterReference:
+    FixedFeeListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FixedFeeList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    CreateFixedFee:
+      required:
+      - amount
+      - date
+      - description
+      - matterId
+      type: object
+      properties:
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The user associated with the fixed fee. If ommitted, the fixed fee with associated with the firm
+          format: uuid
+        matterId:
+          type: string
+          description: The matter is required.
+          format: uuid
+        date:
+          type: string
+          description: The date of the fixed fee. Required
+          format: date
+        description:
+          minLength: 1
+          type: string
+          description: The description of the fixed fee. Required
+        amount:
+          type: number
+          description: The amount of the fixed fee (Required)
+          format: double
+        activityCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES activity code
+        taskCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES task code
+      additionalProperties: false
+    ClientReference:
       required:
       - name
       type: object
@@ -555,12 +555,12 @@ components:
         name:
           minLength: 1
           type: string
-          description: The name of the matter
+          description: The name of the Client - either company name or individual name
         reference:
           type:
           - string
           - 'null'
-          description: A reference number for the matter
+          description: A reference number for the Client
       additionalProperties: false
   securitySchemes:
     BearerAuth:

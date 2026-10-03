@@ -34,31 +34,6 @@ paths:
                 $ref: '#/components/schemas/CustomFieldListIEnumerableResponse'
 components:
   schemas:
-    CustomFieldOption:
-      required:
-      - label
-      - optionId
-      type: object
-      properties:
-        optionId:
-          type: string
-          description: The id of the option. This is the value to use when setting the field on a record.
-          format: uuid
-        label:
-          minLength: 1
-          type: string
-          description: The label of the option
-      additionalProperties: false
-      description: An option available on an "enum" custom field
-    CustomFieldValueType:
-      enum:
-      - text
-      - boolean
-      - number
-      - date
-      - enum
-      type: string
-      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
     CustomFieldList:
       required:
       - entity
@@ -100,6 +75,22 @@ components:
           description: The data returned by the API
       additionalProperties: false
       description: Standardized API response wrapper for single item responses
+    CustomFieldOption:
+      required:
+      - label
+      - optionId
+      type: object
+      properties:
+        optionId:
+          type: string
+          description: The id of the option. This is the value to use when setting the field on a record.
+          format: uuid
+        label:
+          minLength: 1
+          type: string
+          description: The label of the option
+      additionalProperties: false
+      description: An option available on an "enum" custom field
     CustomFieldEntityType:
       enum:
       - client
@@ -107,6 +98,15 @@ components:
       - user
       type: string
       description: The entity type a custom field belongs to
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
   securitySchemes:
     BearerAuth:
       type: http

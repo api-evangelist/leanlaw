@@ -25,6 +25,43 @@ paths:
                 $ref: '#/components/schemas/CodeListResponse'
 components:
   schemas:
+    CodeList:
+      required:
+      - activity
+      - codeSets
+      - expense
+      - task
+      type: object
+      properties:
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of activity codes
+        task:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of task codes
+        expense:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeDetail'
+          description: The list of expense codes
+        codeSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeSet'
+          description: List of code sets
+      additionalProperties: false
+      description: Represents the complete list of LEDES code sets
+    CodeListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CodeList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     CodeSet:
       required:
       - codeSetId
@@ -79,43 +116,6 @@ components:
             the user for informational purposes.'
       additionalProperties: false
       description: Represents a LEDES code
-    CodeListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/CodeList'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    CodeList:
-      required:
-      - activity
-      - codeSets
-      - expense
-      - task
-      type: object
-      properties:
-        activity:
-          type: array
-          items:
-            $ref: '#/components/schemas/CodeDetail'
-          description: The list of activity codes
-        task:
-          type: array
-          items:
-            $ref: '#/components/schemas/CodeDetail'
-          description: The list of task codes
-        expense:
-          type: array
-          items:
-            $ref: '#/components/schemas/CodeDetail'
-          description: The list of expense codes
-        codeSets:
-          type: array
-          items:
-            $ref: '#/components/schemas/CodeSet'
-          description: List of code sets
-      additionalProperties: false
-      description: Represents the complete list of LEDES code sets
   securitySchemes:
     BearerAuth:
       type: http
