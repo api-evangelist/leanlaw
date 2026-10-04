@@ -86,6 +86,32 @@ paths:
           description: OK
 components:
   schemas:
+    CreatePracticeArea:
+      required:
+      - label
+      type: object
+      properties:
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the practice area
+        default:
+          type: boolean
+          description: Indicates whether this is the default practice area
+      additionalProperties: false
+      description: Represents a create request for a practice area
+    PracticeAreaListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PracticeAreaList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     UpdatePracticeArea:
       type: object
       properties:
@@ -108,20 +134,6 @@ components:
           $ref: '#/components/schemas/PracticeAreaList'
       additionalProperties: false
       description: Standardized API response wrapper for single item responses
-    CreatePracticeArea:
-      required:
-      - label
-      type: object
-      properties:
-        label:
-          minLength: 1
-          type: string
-          description: The label/name of the practice area
-        default:
-          type: boolean
-          description: Indicates whether this is the default practice area
-      additionalProperties: false
-      description: Represents a create request for a practice area
     PracticeAreaList:
       required:
       - default
@@ -142,18 +154,6 @@ components:
           description: Indicates whether this is the default practice area
       additionalProperties: false
       description: Represents a practice area
-    PracticeAreaListIEnumerableResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PracticeAreaList'
-          description: The data returned by the API
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
   securitySchemes:
     BearerAuth:
       type: http

@@ -94,69 +94,6 @@ paths:
                 $ref: '#/components/schemas/InvoiceListListResponse'
 components:
   schemas:
-    Pagination:
-      required:
-      - limit
-      - offset
-      - total
-      type: object
-      properties:
-        limit:
-          type: integer
-          description: Maximum number of items to return
-          format: int32
-        offset:
-          type: integer
-          description: Number of items to offset
-          format: int32
-        total:
-          type: integer
-          description: Total number of items available
-          format: int32
-        sort:
-          type:
-          - string
-          - 'null'
-          description: Current sort parameters applied to the results
-      additionalProperties: false
-      description: Pagination information
-    Metadata:
-      required:
-      - createdAt
-      - modifiedAt
-      type: object
-      properties:
-        createdAt:
-          type: string
-          description: The date the entity was created.
-          format: date-time
-        modifiedAt:
-          type: string
-          description: The date the entity was last modified.
-          format: date-time
-      additionalProperties: false
-    InvoiceState:
-      enum:
-      - draft
-      - review
-      - approved
-      - final
-      type: string
-      description: The state of an invoice
-    InvoiceListListResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/InvoiceList'
-          description: The list of items returned by the API
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      description: Standardized API response wrapper for list responses with pagination Paginationdata
     MatterReference:
       required:
       - name
@@ -187,6 +124,14 @@ components:
           - 'null'
           description: A reference number for the Client
       additionalProperties: false
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
     InvoiceList:
       required:
       - amount
@@ -243,6 +188,61 @@ components:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
       description: Represents an invoice in the list response
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    InvoiceListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/InvoiceList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
   securitySchemes:
     BearerAuth:
       type: http

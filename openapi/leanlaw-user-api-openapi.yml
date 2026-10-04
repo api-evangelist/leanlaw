@@ -87,6 +87,98 @@ paths:
                 $ref: '#/components/schemas/UserListResponse'
 components:
   schemas:
+    Role:
+      enum:
+      - principal
+      - attorney
+      - paralegal
+      - timekeeper
+      - operator
+      - accountant
+      type: string
+      description: The role of the user
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserList'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    CustomFieldValueType:
+      enum:
+      - text
+      - boolean
+      - number
+      - date
+      - enum
+      type: string
+      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
+    UserListIEnumerableResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/UserList'
+          description: The data returned by the API
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
+    UpdateUser:
+      type: object
+      properties:
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldValueUpdate'
+          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
+
+            leave every custom field alone, and set an entry''s value to null to clear that one field.
+
+            Ids come from GET /v2/custom-fields?entity=user.'
+      additionalProperties: false
+      description: 'Update an existing user. Only custom fields can be set through the API - the rest of a user''s
+
+        record (name, email, role, rates) is managed in LeanLaw itself.'
+    CustomFieldValueUpdate:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: The id of the custom field to set. Ids come from GET /v2/custom-fields.
+        value:
+          oneOf:
+          - type: string
+            description: For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too
+          - type: number
+            description: For a `number` field
+          - type: boolean
+            description: For a `boolean` field
+          description: 'The value to set, typed according to the field''s valueType: a string for "text", a number for
+
+            "number", a boolean for "boolean", an ISO-8601 date ("yyyy-MM-dd") for "date", and an option
+
+            label for "enum" (prefer "optionId" for those, since labels can be renamed). Numbers, booleans
+
+            and dates may also be sent as strings. Set to null to clear the field.'
+        optionId:
+          type:
+          - string
+          - 'null'
+          description: 'The id of the option to select, for "enum" fields only. Option ids come from
+
+            GET /v2/custom-fields. Takes precedence over "value".'
+          format: uuid
+      additionalProperties: false
+      description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
+
+        any custom field not in the array keeps its current value.'
     CustomFieldValue:
       required:
       - id
@@ -128,79 +220,6 @@ components:
           format: uuid
       additionalProperties: false
       description: A custom field and its value on a client, matter or user
-    UserListResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserList'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    CustomFieldValueUpdate:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          minLength: 1
-          type: string
-          description: The id of the custom field to set. Ids come from GET /v2/custom-fields.
-        value:
-          oneOf:
-          - type: string
-            description: For a `text` field, and accepted for `date` (`yyyy-MM-dd`), `enum` (an option label - prefer `optionId`), `number` and `boolean` fields too
-          - type: number
-            description: For a `number` field
-          - type: boolean
-            description: For a `boolean` field
-          description: 'The value to set, typed according to the field''s valueType: a string for "text", a number for
-
-            "number", a boolean for "boolean", an ISO-8601 date ("yyyy-MM-dd") for "date", and an option
-
-            label for "enum" (prefer "optionId" for those, since labels can be renamed). Numbers, booleans
-
-            and dates may also be sent as strings. Set to null to clear the field.'
-        optionId:
-          type:
-          - string
-          - 'null'
-          description: 'The id of the option to select, for "enum" fields only. Option ids come from
-
-            GET /v2/custom-fields. Takes precedence over "value".'
-          format: uuid
-      additionalProperties: false
-      description: 'Sets the value of a single custom field on a record. Only the fields listed are touched -
-
-        any custom field not in the array keeps its current value.'
-    UpdateUser:
-      type: object
-      properties:
-        customFields:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/CustomFieldValueUpdate'
-          description: 'Custom field values to set. Only the fields listed are changed - omit the property entirely to
-
-            leave every custom field alone, and set an entry''s value to null to clear that one field.
-
-            Ids come from GET /v2/custom-fields?entity=user.'
-      additionalProperties: false
-      description: 'Update an existing user. Only custom fields can be set through the API - the rest of a user''s
-
-        record (name, email, role, rates) is managed in LeanLaw itself.'
-    UserListIEnumerableResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/UserList'
-          description: The data returned by the API
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
     UserList:
       required:
       - email
@@ -249,25 +268,6 @@ components:
             via the select parameter; PUT /v2/users/{id} always returns them.'
       additionalProperties: false
       description: A user in the firm
-    CustomFieldValueType:
-      enum:
-      - text
-      - boolean
-      - number
-      - date
-      - enum
-      type: string
-      description: The type of the custom field. "Enum" fields are enumerated fields with a set of possible values, the values are outlined in the 'options' property.
-    Role:
-      enum:
-      - principal
-      - attorney
-      - paralegal
-      - timekeeper
-      - operator
-      - accountant
-      type: string
-      description: The role of the user
   securitySchemes:
     BearerAuth:
       type: http

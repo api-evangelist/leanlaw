@@ -186,32 +186,58 @@ paths:
           description: OK
 components:
   schemas:
-    UserReference:
+    MatterReference:
       required:
-      - firstName
-      - lastName
+      - name
       type: object
       properties:
         name:
+          minLength: 1
+          type: string
+          description: The name of the matter
+        reference:
           type:
           - string
           - 'null'
-          description: The name of the user
-        initials:
-          type:
-          - string
-          - 'null'
-          description: The initials of the user
-        firstName:
-          minLength: 1
-          type: string
-          description: The first name of the user
-        lastName:
-          minLength: 1
-          type: string
-          description: The last name of the user
+          description: A reference number for the matter
       additionalProperties: false
-      description: A user in the firm
+    ClientReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the Client
+      additionalProperties: false
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
+    FixedFeeListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/FixedFeeList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
     Pagination:
       required:
       - limit
@@ -238,188 +264,6 @@ components:
           description: Current sort parameters applied to the results
       additionalProperties: false
       description: Pagination information
-    FixedFeeList:
-      required:
-      - amount
-      - billed
-      - clientId
-      - date
-      - description
-      - fixedFeeId
-      - matterId
-      type: object
-      properties:
-        fixedFeeId:
-          type: string
-          description: The id of of the fixed fee
-          format: uuid
-        userId:
-          type:
-          - string
-          - 'null'
-          description: The id of the user assigned to the fixed fee. If null, the fixed fee is unassigned.
-          format: uuid
-        user:
-          $ref: '#/components/schemas/UserReference'
-        matterId:
-          type: string
-          description: The id of the matter that the fixed fee is associated with.
-          format: uuid
-        matter:
-          $ref: '#/components/schemas/MatterReference'
-        clientId:
-          type: string
-          description: The id of the client that the fixed fee is associated with.
-          format: uuid
-        client:
-          $ref: '#/components/schemas/ClientReference'
-        date:
-          type: string
-          description: The date of the fixed fee.
-          format: date
-        description:
-          minLength: 1
-          type: string
-          description: The description of the fixed fee.
-        amount:
-          type: number
-          description: The amount of the fixed fee.
-          format: double
-        billed:
-          type: boolean
-          description: True if the fixed fee is on an invoice, regardless of the invoice state.
-        invoiceId:
-          type:
-          - string
-          - 'null'
-          description: The id of the invoice this fixed fee is associated with, if billed.
-          format: uuid
-        invoice:
-          $ref: '#/components/schemas/InvoiceReference'
-        meta:
-          $ref: '#/components/schemas/Metadata'
-      additionalProperties: false
-    FixedFeeDetailResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FixedFeeDetail'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
-    Metadata:
-      required:
-      - createdAt
-      - modifiedAt
-      type: object
-      properties:
-        createdAt:
-          type: string
-          description: The date the entity was created.
-          format: date-time
-        modifiedAt:
-          type: string
-          description: The date the entity was last modified.
-          format: date-time
-      additionalProperties: false
-    MatterReference:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the matter
-        reference:
-          type:
-          - string
-          - 'null'
-          description: A reference number for the matter
-      additionalProperties: false
-    UpdateFixedFee:
-      type: object
-      properties:
-        date:
-          type:
-          - string
-          - 'null'
-          description: The date of the fixed fee.
-          format: date
-        matterId:
-          type:
-          - string
-          - 'null'
-          description: The matter that the fixed fee is associated with.
-          format: uuid
-        userId:
-          type:
-          - string
-          - 'null'
-          description: The user that the fixed fee is associated with.
-          format: uuid
-        description:
-          type:
-          - string
-          - 'null'
-          description: The description of the fixed fee.
-        amount:
-          type:
-          - number
-          - 'null'
-          description: The amount of the fixed fee
-          format: double
-        activityCode:
-          type:
-          - string
-          - 'null'
-          description: LEDES activity code
-        taskCode:
-          type:
-          - string
-          - 'null'
-          description: LEDES task code
-      additionalProperties: false
-    InvoiceReference:
-      required:
-      - invoiceAmount
-      - invoiceBalance
-      - invoiceDate
-      - invoiceId
-      - invoiceNumber
-      - invoiceState
-      type: object
-      properties:
-        invoiceId:
-          type: string
-          description: The id of the invoice.
-          format: uuid
-        invoiceNumber:
-          minLength: 1
-          type: string
-          description: The invoice number.
-        invoiceDate:
-          type: string
-          description: The date of the invoice.
-          format: date
-        invoiceState:
-          $ref: '#/components/schemas/InvoiceState'
-        invoiceAmount:
-          type: number
-          description: The total amount of the invoice.
-          format: double
-        invoiceBalance:
-          type: number
-          description: The outstanding balance of the invoice.
-          format: double
-      additionalProperties: false
-    InvoiceState:
-      enum:
-      - draft
-      - review
-      - approved
-      - final
-      type: string
-      description: The state of an invoice
     FixedFeeDetail:
       required:
       - amount
@@ -492,20 +336,191 @@ components:
         meta:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    FixedFeeListListResponse:
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    InvoiceReference:
+      required:
+      - invoiceAmount
+      - invoiceBalance
+      - invoiceDate
+      - invoiceId
+      - invoiceNumber
+      - invoiceState
+      type: object
+      properties:
+        invoiceId:
+          type: string
+          description: The id of the invoice.
+          format: uuid
+        invoiceNumber:
+          minLength: 1
+          type: string
+          description: The invoice number.
+        invoiceDate:
+          type: string
+          description: The date of the invoice.
+          format: date
+        invoiceState:
+          $ref: '#/components/schemas/InvoiceState'
+        invoiceAmount:
+          type: number
+          description: The total amount of the invoice.
+          format: double
+        invoiceBalance:
+          type: number
+          description: The outstanding balance of the invoice.
+          format: double
+      additionalProperties: false
+    FixedFeeList:
+      required:
+      - amount
+      - billed
+      - clientId
+      - date
+      - description
+      - fixedFeeId
+      - matterId
+      type: object
+      properties:
+        fixedFeeId:
+          type: string
+          description: The id of of the fixed fee
+          format: uuid
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The id of the user assigned to the fixed fee. If null, the fixed fee is unassigned.
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserReference'
+        matterId:
+          type: string
+          description: The id of the matter that the fixed fee is associated with.
+          format: uuid
+        matter:
+          $ref: '#/components/schemas/MatterReference'
+        clientId:
+          type: string
+          description: The id of the client that the fixed fee is associated with.
+          format: uuid
+        client:
+          $ref: '#/components/schemas/ClientReference'
+        date:
+          type: string
+          description: The date of the fixed fee.
+          format: date
+        description:
+          minLength: 1
+          type: string
+          description: The description of the fixed fee.
+        amount:
+          type: number
+          description: The amount of the fixed fee.
+          format: double
+        billed:
+          type: boolean
+          description: True if the fixed fee is on an invoice, regardless of the invoice state.
+        invoiceId:
+          type:
+          - string
+          - 'null'
+          description: The id of the invoice this fixed fee is associated with, if billed.
+          format: uuid
+        invoice:
+          $ref: '#/components/schemas/InvoiceReference'
+        meta:
+          $ref: '#/components/schemas/Metadata'
+      additionalProperties: false
+    UserReference:
+      required:
+      - firstName
+      - lastName
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the user
+        initials:
+          type:
+          - string
+          - 'null'
+          description: The initials of the user
+        firstName:
+          minLength: 1
+          type: string
+          description: The first name of the user
+        lastName:
+          minLength: 1
+          type: string
+          description: The last name of the user
+      additionalProperties: false
+      description: A user in the firm
+    UpdateFixedFee:
+      type: object
+      properties:
+        date:
+          type:
+          - string
+          - 'null'
+          description: The date of the fixed fee.
+          format: date
+        matterId:
+          type:
+          - string
+          - 'null'
+          description: The matter that the fixed fee is associated with.
+          format: uuid
+        userId:
+          type:
+          - string
+          - 'null'
+          description: The user that the fixed fee is associated with.
+          format: uuid
+        description:
+          type:
+          - string
+          - 'null'
+          description: The description of the fixed fee.
+        amount:
+          type:
+          - number
+          - 'null'
+          description: The amount of the fixed fee
+          format: double
+        activityCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES activity code
+        taskCode:
+          type:
+          - string
+          - 'null'
+          description: LEDES task code
+      additionalProperties: false
+    FixedFeeDetailResponse:
       type: object
       properties:
         data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/FixedFeeList'
-          description: The list of items returned by the API
-        pagination:
-          $ref: '#/components/schemas/Pagination'
+          $ref: '#/components/schemas/FixedFeeDetail'
       additionalProperties: false
-      description: Standardized API response wrapper for list responses with pagination Paginationdata
+      description: Standardized API response wrapper for single item responses
     CreateFixedFee:
       required:
       - amount
@@ -546,21 +561,6 @@ components:
           - string
           - 'null'
           description: LEDES task code
-      additionalProperties: false
-    ClientReference:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          minLength: 1
-          type: string
-          description: The name of the Client - either company name or individual name
-        reference:
-          type:
-          - string
-          - 'null'
-          description: A reference number for the Client
       additionalProperties: false
   securitySchemes:
     BearerAuth:
