@@ -93,3 +93,42 @@ gaps:
 - No tier states whether the REST API or the MCP server is included.
 - No API call quota, overage rate, or usage-based pricing is published.
 - Two of four tiers have no public price.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - metered
+  - seat
+  units:
+  - seat
+  plans:
+  - name: Core
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods:
+    - month
+  - name: Pro
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods:
+    - month
+  - name: Contingency
+    access: other
+    model: metered
+    model_how: derived
+    units:
+    - seat
+    periods: []
+  - name: Elite
+    access: other
+    model: metered
+    model_how: derived
+    units:
+    - seat
+    periods: []

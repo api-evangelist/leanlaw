@@ -148,3 +148,33 @@ tools:
     rest: GetCodes
   - name: list_custom_fields
     rest: ListCustomFields
+rfc9728:
+  endpoint: https://api.leanlaw.io/mcp
+  metadata_url: https://api.leanlaw.io/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://api.leanlaw.io/mcp
+    authorization_servers:
+    - https://auth.leanlaw.io
+    scopes_supported:
+    - read:*
+    - write:*
+    - read:clients
+    - write:clients
+    - read:matters
+    - write:matters
+    - read:time-entries
+    - write:time-entries
+    - read:expenses
+    - write:expenses
+    - read:fixed-fees
+    - write:fixed-fees
+    - read:invoices
+    - read:balances
+    - read:codes
+    - offline_access
+    bearer_methods_supported:
+    - header
