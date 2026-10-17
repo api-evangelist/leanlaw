@@ -25,27 +25,6 @@ paths:
                 $ref: '#/components/schemas/CodeListResponse'
 components:
   schemas:
-    CodeSet:
-      required:
-      - codeSetId
-      - description
-      - label
-      type: object
-      properties:
-        codeSetId:
-          minLength: 1
-          type: string
-          description: The unique identifier of the code set
-        label:
-          minLength: 1
-          type: string
-          description: The label/name of the code set
-        description:
-          minLength: 1
-          type: string
-          description: The description of the code set
-      additionalProperties: false
-      description: Represents a set of LEDES codes within a category
     CodeListResponse:
       type: object
       properties:
@@ -116,6 +95,27 @@ components:
           description: List of code sets
       additionalProperties: false
       description: Represents the complete list of LEDES code sets
+    CodeSet:
+      required:
+      - codeSetId
+      - description
+      - label
+      type: object
+      properties:
+        codeSetId:
+          minLength: 1
+          type: string
+          description: The unique identifier of the code set
+        label:
+          minLength: 1
+          type: string
+          description: The label/name of the code set
+        description:
+          minLength: 1
+          type: string
+          description: The description of the code set
+      additionalProperties: false
+      description: Represents a set of LEDES codes within a category
   securitySchemes:
     BearerAuth:
       type: http

@@ -201,6 +201,28 @@ paths:
           description: OK
 components:
   schemas:
+    Metadata:
+      required:
+      - createdAt
+      - modifiedAt
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: The date the entity was created.
+          format: date-time
+        modifiedAt:
+          type: string
+          description: The date the entity was last modified.
+          format: date-time
+      additionalProperties: false
+    TimeEntryDetailResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TimeEntryDetail'
+      additionalProperties: false
+      description: Standardized API response wrapper for single item responses
     MatterReference:
       required:
       - name
@@ -215,6 +237,116 @@ components:
           - string
           - 'null'
           description: A reference number for the matter
+      additionalProperties: false
+    UserReference:
+      required:
+      - firstName
+      - lastName
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the user
+        initials:
+          type:
+          - string
+          - 'null'
+          description: The initials of the user
+        firstName:
+          minLength: 1
+          type: string
+          description: The first name of the user
+        lastName:
+          minLength: 1
+          type: string
+          description: The last name of the user
+      additionalProperties: false
+      description: A user in the firm
+    TimeEntryListListResponse:
+      type: object
+      properties:
+        data:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/TimeEntryList'
+          description: The list of items returned by the API
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+      additionalProperties: false
+      description: Standardized API response wrapper for list responses with pagination Paginationdata
+    InvoiceState:
+      enum:
+      - draft
+      - review
+      - approved
+      - final
+      type: string
+      description: The state of an invoice
+    FixedFeeReference:
+      required:
+      - amount
+      - id
+      - label
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the fixed fee
+          format: uuid
+        label:
+          minLength: 1
+          type: string
+          description: The label of the fixed fee
+        amount:
+          type: number
+          description: The amount of the fixed fee
+          format: double
+      additionalProperties: false
+      description: A reference to a fixed fee
+    Pagination:
+      required:
+      - limit
+      - offset
+      - total
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of items to return
+          format: int32
+        offset:
+          type: integer
+          description: Number of items to offset
+          format: int32
+        total:
+          type: integer
+          description: Total number of items available
+          format: int32
+        sort:
+          type:
+          - string
+          - 'null'
+          description: Current sort parameters applied to the results
+      additionalProperties: false
+      description: Pagination information
+    ClientReference:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: The name of the Client - either company name or individual name
+        reference:
+          type:
+          - string
+          - 'null'
+          description: A reference number for the Client
       additionalProperties: false
     TimeEntryList:
       required:
@@ -317,52 +449,66 @@ components:
         meta:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    ClientReference:
+    InvoiceReference:
       required:
-      - name
+      - invoiceAmount
+      - invoiceBalance
+      - invoiceDate
+      - invoiceId
+      - invoiceNumber
+      - invoiceState
       type: object
       properties:
-        name:
+        invoiceId:
+          type: string
+          description: The id of the invoice.
+          format: uuid
+        invoiceNumber:
           minLength: 1
           type: string
-          description: The name of the Client - either company name or individual name
-        reference:
-          type:
-          - string
-          - 'null'
-          description: A reference number for the Client
+          description: The invoice number.
+        invoiceDate:
+          type: string
+          description: The date of the invoice.
+          format: date
+        invoiceState:
+          $ref: '#/components/schemas/InvoiceState'
+        invoiceAmount:
+          type: number
+          description: The total amount of the invoice.
+          format: double
+        invoiceBalance:
+          type: number
+          description: The outstanding balance of the invoice.
+          format: double
       additionalProperties: false
-    InvoiceState:
+    BillingType:
       enum:
-      - draft
-      - review
-      - approved
-      - final
+      - nonBillable
+      - billable
+      - fixedFee
       type: string
-      description: The state of an invoice
-    CreateTimeEntry:
-      required:
-      - date
-      - description
-      - hours
-      - matterId
+      description: The billing type of a time entry
+    UpdateTimeEntry:
       type: object
       properties:
         userId:
           type:
           - string
           - 'null'
-          description: 'The user the time is for. Optional: when omitted it falls back to the x-leanlaw-userid header, and
-
-            then to the user the credential itself identifies. Required only when the credential names no user.'
+          description: Update the user of the time entry.
           format: uuid
         matterId:
-          type: string
-          description: The matter is required.
+          type:
+          - string
+          - 'null'
+          description: Update the matter of the time entry.
           format: uuid
         date:
-          type: string
-          description: The date of the time entry. Required
+          type:
+          - string
+          - 'null'
+          description: Update the date of the time entry
           format: date
         time:
           type:
@@ -371,18 +517,21 @@ components:
           description: The time of the time entry. Optional.
           format: time
         description:
-          minLength: 1
-          type: string
-          description: The description of the time entry. Required
+          type:
+          - string
+          - 'null'
+          description: Update the description of the time entry, provide null to keep the current description
         hours:
-          type: number
-          description: The number of hours for the time entry. Required
+          type:
+          - number
+          - 'null'
+          description: Update the hours of the time entry, provide null to keep the current hours
           format: double
         rate:
           type:
           - number
           - 'null'
-          description: "The rate of the time entry. If not provided, the rate for the user will be used. \nIn most scenarios the rate should not be provided directly here."
+          description: The rate of the time entry.
           format: double
         billingType:
           $ref: '#/components/schemas/BillingType'
@@ -390,7 +539,7 @@ components:
           type:
           - string
           - 'null'
-          description: The id of the fixed fee to associate with this time entry. Optional.
+          description: "The id of the fixed fee to associate with this time entry. \nProvide null to keep the existing association (or none if there isn't one).\nProvide Guid.Empty to remove an existing association."
           format: uuid
         activityCode:
           type:
@@ -403,67 +552,6 @@ components:
           - 'null'
           description: LEDES task code
       additionalProperties: false
-    TimeEntryListListResponse:
-      type: object
-      properties:
-        data:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/TimeEntryList'
-          description: The list of items returned by the API
-        pagination:
-          $ref: '#/components/schemas/Pagination'
-      additionalProperties: false
-      description: Standardized API response wrapper for list responses with pagination Paginationdata
-    FixedFeeReference:
-      required:
-      - amount
-      - id
-      - label
-      type: object
-      properties:
-        id:
-          type: string
-          description: The id of the fixed fee
-          format: uuid
-        label:
-          minLength: 1
-          type: string
-          description: The label of the fixed fee
-        amount:
-          type: number
-          description: The amount of the fixed fee
-          format: double
-      additionalProperties: false
-      description: A reference to a fixed fee
-    Pagination:
-      required:
-      - limit
-      - offset
-      - total
-      type: object
-      properties:
-        limit:
-          type: integer
-          description: Maximum number of items to return
-          format: int32
-        offset:
-          type: integer
-          description: Number of items to offset
-          format: int32
-        total:
-          type: integer
-          description: Total number of items available
-          format: int32
-        sort:
-          type:
-          - string
-          - 'null'
-          description: Current sort parameters applied to the results
-      additionalProperties: false
-      description: Pagination information
     TimeEntryDetail:
       required:
       - billed
@@ -568,74 +656,29 @@ components:
         meta:
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    Metadata:
+    CreateTimeEntry:
       required:
-      - createdAt
-      - modifiedAt
-      type: object
-      properties:
-        createdAt:
-          type: string
-          description: The date the entity was created.
-          format: date-time
-        modifiedAt:
-          type: string
-          description: The date the entity was last modified.
-          format: date-time
-      additionalProperties: false
-    InvoiceReference:
-      required:
-      - invoiceAmount
-      - invoiceBalance
-      - invoiceDate
-      - invoiceId
-      - invoiceNumber
-      - invoiceState
-      type: object
-      properties:
-        invoiceId:
-          type: string
-          description: The id of the invoice.
-          format: uuid
-        invoiceNumber:
-          minLength: 1
-          type: string
-          description: The invoice number.
-        invoiceDate:
-          type: string
-          description: The date of the invoice.
-          format: date
-        invoiceState:
-          $ref: '#/components/schemas/InvoiceState'
-        invoiceAmount:
-          type: number
-          description: The total amount of the invoice.
-          format: double
-        invoiceBalance:
-          type: number
-          description: The outstanding balance of the invoice.
-          format: double
-      additionalProperties: false
-    UpdateTimeEntry:
+      - date
+      - description
+      - hours
+      - matterId
       type: object
       properties:
         userId:
           type:
           - string
           - 'null'
-          description: Update the user of the time entry.
+          description: 'The user the time is for. Optional: when omitted it falls back to the x-leanlaw-userid header, and
+
+            then to the user the credential itself identifies. Required only when the credential names no user.'
           format: uuid
         matterId:
-          type:
-          - string
-          - 'null'
-          description: Update the matter of the time entry.
+          type: string
+          description: The matter is required.
           format: uuid
         date:
-          type:
-          - string
-          - 'null'
-          description: Update the date of the time entry
+          type: string
+          description: The date of the time entry. Required
           format: date
         time:
           type:
@@ -644,21 +687,18 @@ components:
           description: The time of the time entry. Optional.
           format: time
         description:
-          type:
-          - string
-          - 'null'
-          description: Update the description of the time entry, provide null to keep the current description
+          minLength: 1
+          type: string
+          description: The description of the time entry. Required
         hours:
-          type:
-          - number
-          - 'null'
-          description: Update the hours of the time entry, provide null to keep the current hours
+          type: number
+          description: The number of hours for the time entry. Required
           format: double
         rate:
           type:
           - number
           - 'null'
-          description: The rate of the time entry.
+          description: "The rate of the time entry. If not provided, the rate for the user will be used. \nIn most scenarios the rate should not be provided directly here."
           format: double
         billingType:
           $ref: '#/components/schemas/BillingType'
@@ -666,7 +706,7 @@ components:
           type:
           - string
           - 'null'
-          description: "The id of the fixed fee to associate with this time entry. \nProvide null to keep the existing association (or none if there isn't one).\nProvide Guid.Empty to remove an existing association."
+          description: The id of the fixed fee to associate with this time entry. Optional.
           format: uuid
         activityCode:
           type:
@@ -679,46 +719,6 @@ components:
           - 'null'
           description: LEDES task code
       additionalProperties: false
-    BillingType:
-      enum:
-      - nonBillable
-      - billable
-      - fixedFee
-      type: string
-      description: The billing type of a time entry
-    UserReference:
-      required:
-      - firstName
-      - lastName
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-          description: The name of the user
-        initials:
-          type:
-          - string
-          - 'null'
-          description: The initials of the user
-        firstName:
-          minLength: 1
-          type: string
-          description: The first name of the user
-        lastName:
-          minLength: 1
-          type: string
-          description: The last name of the user
-      additionalProperties: false
-      description: A user in the firm
-    TimeEntryDetailResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/TimeEntryDetail'
-      additionalProperties: false
-      description: Standardized API response wrapper for single item responses
   securitySchemes:
     BearerAuth:
       type: http
