@@ -64,12 +64,138 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-LeanLaw is legal billing and revenue-operations software for small and mid-sized law firms, built natively on QuickBooks Online — time and expense tracking, matter management, trust/IOLTA accounting, flat-fee and contingency billing, invoicing, e-payments and LEDES output.
+LeanLaw is legal billing and revenue-operations software for small and mid-sized law firms, built natively on QuickBooks Online. It runs the full law-firm revenue lifecycle — time and expense tracking, matter management, trust/IOLTA accounting, flat-fee and contingency billing, invoicing, e-payments, LEDES output and compensation reporting — and keeps a real-time two-way sync with QuickBooks Online so invoices, payments, trust deposits and expenses post automatically. LeanLaw publishes a public REST API (v2) at api.leanlaw.io covering clients, matters, time entries, expenses, fixed fees, invoices, practice areas, custom fields, users and LEDES billing codes, with an OpenAPI 3.0.4 specification, a Zudoku-powered developer portal at platform.leanlaw.io, and a remote MCP server for AI assistants that is currently in private beta.
 
-- Website: https://www.leanlaw.co/
-- Developer portal: https://platform.leanlaw.io/start
-- API base URL: https://api.leanlaw.io
-- OpenAPI 3.0.4: https://api.leanlaw.io/swagger/v1/swagger.json
-- MCP server: https://api.leanlaw.io/mcp (private beta)
+**Areas:** Legal · Legal Billing · Law Firms · Time Tracking · Billing · Invoicing · Accounting · Trust Accounting · Practice Management · QuickBooks · Payments · Legal Tech
 
-Note: `leanlaw.com` is a different company (Lean Law Ventures) and is not related to this profile.
+## LeanLaw on APIs.io
+
+Everything profiled for LeanLaw is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/leanlaw/](https://apis.io/providers/leanlaw/)** — or go straight to one of the APIs or properties below.
+
+### APIs (11)
+
+- [LeanLaw MCP Server](https://apis.io/apis/leanlaw/leanlaw-mcp/) — LeanLaw operates a remote Model Context Protocol server at https://api.leanlaw.io/mcp that lets an AI assistant work with a firm's clients, matters, time…
+- [LeanLaw Client API](https://apis.io/apis/leanlaw/leanlaw-client-api/) — The Client API from LeanLaw — 3 operation(s) for client.
+- [LeanLaw Codes API](https://apis.io/apis/leanlaw/leanlaw-codes-api/) — The Codes API from LeanLaw — 1 operation(s) for codes.
+- [LeanLaw Expense API](https://apis.io/apis/leanlaw/leanlaw-expense-api/) — The Expense API from LeanLaw — 2 operation(s) for expense.
+- [LeanLaw Fixed Fee API](https://apis.io/apis/leanlaw/leanlaw-fixedfee-api/) — The FixedFee API from LeanLaw — 2 operation(s) for fixedfee.
+- [LeanLaw Invoice API](https://apis.io/apis/leanlaw/leanlaw-invoice-api/) — The Invoice API from LeanLaw — 1 operation(s) for invoice.
+- [LeanLaw Matter API](https://apis.io/apis/leanlaw/leanlaw-matter-api/) — The Matter API from LeanLaw — 2 operation(s) for matter.
+- [LeanLaw Practice Area API](https://apis.io/apis/leanlaw/leanlaw-practicearea-api/) — The PracticeArea API from LeanLaw — 2 operation(s) for practicearea.
+- [LeanLaw User API](https://apis.io/apis/leanlaw/leanlaw-user-api/) — The User API from LeanLaw — 2 operation(s) for user.
+- [LeanLaw Custom Field API](https://apis.io/apis/leanlaw/leanlaw-custom-field-api/) — The Custom Field API from LeanLaw — 1 operation(s) for custom field.
+- [LeanLaw Time entry API](https://apis.io/apis/leanlaw/leanlaw-time-entry-api/) — The Time entry API from LeanLaw — 2 operation(s) for time entry.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [LeanLaw MCP Server](https://apis.io/servers/leanlaw/leanlaw-mcp-server/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Leanlaw Api Overlay](https://apis.io/overlays/leanlaw/leanlaw-api-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Leanlaw Authentication](https://apis.io/security/leanlaw/leanlaw-authentication/)
+- [Leanlaw Domain Security](https://apis.io/security/leanlaw/leanlaw-domain-security/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Leanlaw Scopes](https://apis.io/scopes/leanlaw/leanlaw-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Leanlaw Plans Pricing](https://apis.io/plans/leanlaw/leanlaw-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Leanlaw Rate Limits](https://apis.io/rate-limits/leanlaw/leanlaw-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.leanlaw.co/)
+- [Documentation](https://platform.leanlaw.io/start)
+- [Getting started](https://platform.leanlaw.io/start)
+- [API reference](https://platform.leanlaw.io/api)
+- [Pricing](https://www.leanlaw.co/pricing/)
+- [Sign up](https://www.leanlaw.co/leanlaw-trial/)
+- [Support](https://support.leanlaw.co/)
+- [Changelog](https://platform.leanlaw.io/changelog)
+- [Blog](https://www.leanlaw.co/blog/)
+- [Terms of service](https://www.leanlaw.co/terms/)
+- [Privacy policy](https://www.leanlaw.co/privacy/)
+- [GitHub](https://github.com/leanlaw)
+- [Status](https://leanlaw.statuspage.io/)
+
+## API Evangelist rating
+
+**Kin Score 54.1** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 47.4 |
+| Contract governance | 18.2 |
+| Operational transparency | 34.2 |
+| Developer ergonomics | 58.9 |
+| Access clarity | 76.3 |
+
+**Agent readiness 43.5** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 31.3** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/leanlaw/](https://apis.io/providers/leanlaw/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for LeanLaw: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/leanlaw/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
